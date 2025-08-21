@@ -13,7 +13,8 @@ const projects = [
     metrics: ["Responsive Design", "SEO Optimized", "Fast Loading"],
     icon: Cloud,
     status: "Live",
-    link: "#"
+    link: "#",
+    github: "https://github.com/bashairfan0911/professional_portfolio"
   },
   {
     id: 2,
@@ -23,7 +24,8 @@ const projects = [
     metrics: ["500+ records analyzed", "Interactive charts", "PDF reports"],
     icon: Database,
     status: "Complete",
-    link: "#"
+    link: "#",
+    github: "https://github.com/bashairfan0911/student-grade-analytics"
   },
   {
     id: 3,
@@ -33,7 +35,8 @@ const projects = [
     metrics: ["Multi-container setup", "Optimized images", "Easy deployment"],
     icon: Shield,
     status: "Learning",
-    link: "#"
+    link: "#",
+    github: "https://github.com/bashairfan0911/dockerized-web-app"
   },
   {
     id: 4,
@@ -43,7 +46,8 @@ const projects = [
     metrics: ["Real-time data", "7-day history", "Automated collection"],
     icon: TrendingUp,
     status: "Complete",
-    link: "#"
+    link: "#",
+    github: "https://github.com/bashairfan0911/weather-data-collector"
   }
 ];
 
@@ -121,9 +125,11 @@ export const ProjectsSection = () => {
                     <ExternalLink className="mr-2 h-4 w-4" />
                     View Details
                   </Button>
-                  <Button size="sm" variant="outline" className="border-primary/30 text-primary hover:bg-primary/10">
-                    <Github className="h-4 w-4" />
-                  </Button>
+                  <a href={project.github} target="_blank" rel="noopener noreferrer">
+                    <Button size="sm" variant="outline" className="border-primary/30 text-primary hover:bg-primary/10">
+                      <Github className="h-4 w-4" />
+                    </Button>
+                  </a>
                 </div>
               </Card>
             );
