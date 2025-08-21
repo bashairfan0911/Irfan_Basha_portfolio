@@ -32,7 +32,9 @@ const projectsData = {
     ],
     duration: "2 weeks",
     role: "Solo Developer",
-    status: "Live"
+    status: "Live",
+    demoLink: "https://professional-portfolio-theta-lac.vercel.app/", 
+    githubLink: "https://github.com/bashairfan0911/professional_portfolio.git" 
   },
   2: {
     title: "Student Grade Analytics Dashboard",
@@ -61,7 +63,9 @@ const projectsData = {
     ],
     duration: "3 weeks",
     role: "Data Analyst",
-    status: "Complete"
+    status: "Complete",
+    demoLink: "https://professional-portfolio-theta-lac.vercel.app/", 
+    githubLink: "https://github.com/bashairfan0911/professional_portfolio.git" 
   },
   3: {
     title: "Dockerized Web Application",
@@ -90,7 +94,9 @@ const projectsData = {
     ],
     duration: "2 weeks",
     role: "DevOps Learner",
-    status: "Learning"
+    status: "Learning",
+    demoLink: "https://professional-portfolio-theta-lac.vercel.app/", 
+    githubLink: "https://github.com/bashairfan0911/professional_portfolio.git" 
   },
   4: {
     title: "Weather Data Collector",
@@ -119,7 +125,9 @@ const projectsData = {
     ],
     duration: "1 week",
     role: "Backend Developer",
-    status: "Complete"
+    status: "Complete",
+    demoLink: "https://professional-portfolio-theta-lac.vercel.app/", 
+    githubLink: "https://github.com/bashairfan0911/professional_portfolio.git" 
   }
 };
 
@@ -255,14 +263,22 @@ export const ProjectDetails = () => {
 
             {/* Action Buttons */}
             <div className="space-y-3">
-              <Button className="w-full bg-primary hover:bg-primary/90">
-                <ExternalLink className="mr-2 h-4 w-4" />
-                Live Demo
-              </Button>
-              <Button variant="outline" className="w-full border-primary/30 text-primary hover:bg-primary/10">
-                <Github className="mr-2 h-4 w-4" />
-                View Code
-              </Button>
+              {project.demoLink && (
+                <a href={project.demoLink} target="_blank" rel="noopener noreferrer">
+                  <Button className="w-full bg-primary hover:bg-primary/90">
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Live Demo
+                  </Button>
+                </a>
+              )}
+              {project.githubLink && (
+                <a href={project.githubLink} target="_blank" rel="noopener noreferrer">
+                  <Button variant="outline" className="w-full border-primary/30 text-primary hover:bg-primary/10">
+                    <Github className="mr-2 h-4 w-4" />
+                    View Code
+                  </Button>
+                </a>
+              )}
             </div>
           </div>
         </div>

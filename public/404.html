@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="0; url=/Modern_portfolio/" />
+    <title>Redirecting…</title>
+  </head>
+  <body>
+    <script>
+      // Redirect to correct path inside React app
+      const path = window.location.pathname.replace("/Modern_portfolio", "");
+      const search = window.location.search;
+      const hash = window.location.hash;
+      window.location.replace("/Modern_portfolio/" + "#" + path + search + hash);
+    </script>
+  </body>
+</html>
