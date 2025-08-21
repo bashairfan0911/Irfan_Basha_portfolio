@@ -64,7 +64,7 @@ const projectsData = {
     duration: "3 weeks",
     role: "Data Analyst",
     status: "Complete",
-    demoLink: "https://professional-portfolio-theta-lac.vercel.app/", 
+    demoLink: "", // removed to test disabled state
     githubLink: "https://github.com/bashairfan0911/professional_portfolio.git" 
   },
   3: {
@@ -96,7 +96,7 @@ const projectsData = {
     role: "DevOps Learner",
     status: "Learning",
     demoLink: "https://professional-portfolio-theta-lac.vercel.app/", 
-    githubLink: "https://github.com/bashairfan0911/professional_portfolio.git" 
+    githubLink: "" // removed to test disabled state
   },
   4: {
     title: "Weather Data Collector",
@@ -126,8 +126,8 @@ const projectsData = {
     duration: "1 week",
     role: "Backend Developer",
     status: "Complete",
-    demoLink: "https://professional-portfolio-theta-lac.vercel.app/", 
-    githubLink: "https://github.com/bashairfan0911/professional_portfolio.git" 
+    demoLink: "", 
+    githubLink: "" 
   }
 };
 
@@ -263,22 +263,42 @@ export const ProjectDetails = () => {
 
             {/* Action Buttons */}
             <div className="space-y-3">
-              {project.demoLink && (
-                <a href={project.demoLink} target="_blank" rel="noopener noreferrer">
-                  <Button className="w-full bg-primary hover:bg-primary/90">
+              <Button
+                className="w-full bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!project.demoLink}
+                asChild={!!project.demoLink}
+              >
+                {project.demoLink ? (
+                  <a href={project.demoLink} target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="mr-2 h-4 w-4" />
                     Live Demo
-                  </Button>
-                </a>
-              )}
-              {project.githubLink && (
-                <a href={project.githubLink} target="_blank" rel="noopener noreferrer">
-                  <Button variant="outline" className="w-full border-primary/30 text-primary hover:bg-primary/10">
+                  </a>
+                ) : (
+                  <>
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Live Demo
+                  </>
+                )}
+              </Button>
+
+              <Button
+                variant="outline"
+                className="w-full border-primary/30 text-primary hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!project.githubLink}
+                asChild={!!project.githubLink}
+              >
+                {project.githubLink ? (
+                  <a href={project.githubLink} target="_blank" rel="noopener noreferrer">
                     <Github className="mr-2 h-4 w-4" />
                     View Code
-                  </Button>
-                </a>
-              )}
+                  </a>
+                ) : (
+                  <>
+                    <Github className="mr-2 h-4 w-4" />
+                    View Code
+                  </>
+                )}
+              </Button>
             </div>
           </div>
         </div>
