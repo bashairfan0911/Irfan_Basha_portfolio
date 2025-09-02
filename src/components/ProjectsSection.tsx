@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, Github, TrendingUp, Shield, Database, Cloud } from "lucide-react";
+import { ExternalLink, Github, TrendingUp, Shield, Database, Cloud, Container, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const projects = [
@@ -13,8 +13,7 @@ const projects = [
     metrics: ["Responsive Design", "SEO Optimized", "Fast Loading"],
     icon: Cloud,
     status: "Live",
-    link: "#",
-    github: "https://github.com/bashairfan0911/professional_portfolio"
+    link: "#"
   },
   {
     id: 2,
@@ -24,8 +23,7 @@ const projects = [
     metrics: ["500+ records analyzed", "Interactive charts", "PDF reports"],
     icon: Database,
     status: "Complete",
-    link: "#",
-    github: "https://github.com/bashairfan0911/student-grade-analytics"
+    link: "#"
   },
   {
     id: 3,
@@ -35,19 +33,17 @@ const projects = [
     metrics: ["Multi-container setup", "Optimized images", "Easy deployment"],
     icon: Shield,
     status: "Learning",
-    link: "#",
-    github: "https://github.com/bashairfan0911/dockerized-web-app"
+    link: "#"
   },
   {
     id: 4,
-    title: "Weather Data Collector",
-    description: "Built a Python script that collects weather data from APIs, stores it in a database, and creates basic visualizations for trend analysis.",
-    technologies: ["Python", "REST APIs", "SQLite", "Requests", "Matplotlib"],
-    metrics: ["Real-time data", "7-day history", "Automated collection"],
-    icon: TrendingUp,
-    status: "Complete",
-    link: "#",
-    github: "https://github.com/bashairfan0911/weather-data-collector"
+    title: "Multi-tier Retail Store Application",
+    description: "A Multi-tier Retail Store Application to demonstrate Kubernetes To Production with EKS + Terraform & GitOps With ArgoCD & GitHub Actions",
+    technologies: ["Kubernetes", "EKS", "Terraform", "ArgoCD", "GitHub Actions", "Docker"],
+    metrics: ["Production Ready", "GitOps", "Auto Scaling"],
+    icon: Container,
+    status: "About",
+    link: "#"
   }
 ];
 
@@ -125,11 +121,9 @@ export const ProjectsSection = () => {
                     <ExternalLink className="mr-2 h-4 w-4" />
                     View Details
                   </Button>
-                  <a href={project.github} target="_blank" rel="noopener noreferrer">
-                    <Button size="sm" variant="outline" className="border-primary/30 text-primary hover:bg-primary/10">
-                      <Github className="h-4 w-4" />
-                    </Button>
-                  </a>
+                  <Button size="sm" variant="outline" className="border-primary/30 text-primary hover:bg-primary/10">
+                    <Github className="h-4 w-4" />
+                  </Button>
                 </div>
               </Card>
             );
