@@ -1,24 +1,26 @@
 import { useEffect, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Code2, Server, Cloud, Database } from "lucide-react";
 
 interface Skill {
   name: string;
   level: number;
   category: 'devops' | 'data' | 'cloud' | 'programming';
+  icon: any;
 }
 
 const skills: Skill[] = [
-  { name: 'Python Programming', level: 75, category: 'programming' },
-  { name: 'Git & GitHub', level: 80, category: 'devops' },
-  { name: 'Docker Basics', level: 65, category: 'devops' },
-  { name: 'AWS Fundamentals', level: 60, category: 'cloud' },
-  { name: 'SQL & MySQL', level: 70, category: 'data' },
-  { name: 'Linux Commands', level: 75, category: 'devops' },
-  { name: 'Data Visualization', level: 68, category: 'data' },
-  { name: 'HTML/CSS/JavaScript', level: 73, category: 'programming' },
-  { name: 'Pandas & NumPy', level: 65, category: 'data' },
-  { name: 'Cloud Computing', level: 58, category: 'cloud' },
+  { name: 'Python Programming', level: 75, category: 'programming', icon: Code2 },
+  { name: 'Git & GitHub', level: 80, category: 'devops', icon: Server },
+  { name: 'Docker Basics', level: 65, category: 'devops', icon: Server },
+  { name: 'AWS Fundamentals', level: 60, category: 'cloud', icon: Cloud },
+  { name: 'SQL & MySQL', level: 70, category: 'data', icon: Database },
+  { name: 'Linux Commands', level: 75, category: 'devops', icon: Server },
+  { name: 'Data Visualization', level: 68, category: 'data', icon: Database },
+  { name: 'HTML/CSS/JavaScript', level: 73, category: 'programming', icon: Code2 },
+  { name: 'Pandas & NumPy', level: 65, category: 'data', icon: Database },
+  { name: 'Cloud Computing', level: 58, category: 'cloud', icon: Cloud },
 ];
 
 const categoryColors = {
@@ -62,33 +64,41 @@ export const SkillsSection = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {skills.map((skill, index) => (
-            <Card key={skill.name} className="card-gradient border-border/50 p-6 group hover:scale-105 transition-all duration-300">
-              <div className="flex justify-between items-center mb-3">
-                <h3 className="font-semibold text-card-foreground">{skill.name}</h3>
-                <Badge className={categoryColors[skill.category]}>
-                  {skill.category.toUpperCase()}
-                </Badge>
-              </div>
+          {skills.map((skill, index) => {
+            const IconComponent = skill.icon;
+            return (
+              <Card key={skill.name} className="card-gradient border-border/50 p-6 group hover:scale-105 transition-all duration-300">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                    <IconComponent className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-card-foreground">{skill.name}</h3>
+                  </div>
+                  <Badge className={categoryColors[skill.category]}>
+                    {skill.category.toUpperCase()}
+                  </Badge>
+                </div>
               
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Proficiency</span>
-                  <span className="text-primary font-medium">{skill.level}%</span>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Proficiency</span>
+                    <span className="text-primary font-medium">{skill.level}%</span>
+                  </div>
+                  
+                  <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-primary to-tech-accent rounded-full transition-all duration-1000 ease-out"
+                      style={{ 
+                        width: isVisible ? `${skill.level}%` : '0%',
+                        transitionDelay: `${index * 100}ms`
+                      }}
+                    />
+                  </div>
                 </div>
-                
-                <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-gradient-to-r from-primary to-tech-accent rounded-full transition-all duration-1000 ease-out"
-                    style={{ 
-                      width: isVisible ? `${skill.level}%` : '0%',
-                      transitionDelay: `${index * 100}ms`
-                    }}
-                  />
-                </div>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            );
+          })}
         </div>
 
         {/* Learning Resources */}
