@@ -36,37 +36,48 @@ const projectsData = {
     demoLink: "https://professional-portfolio-theta-lac.vercel.app/", 
     githubLink: "https://github.com/bashairfan0911/professional_portfolio.git" 
   },
-  2: {
-    title: "Student Grade Analytics Dashboard",
-    description: "Created a Python-based data analysis project that processes student performance data and generates interactive visualizations to identify learning trends.",
-    longDescription: "This project was developed to understand data analysis workflows and visualization techniques. Using Python's data science ecosystem, I built a comprehensive dashboard that processes academic performance data and generates meaningful insights through various chart types and statistical analysis.",
-    technologies: ["Python", "Pandas", "Matplotlib", "Jupyter", "CSV"],
-    features: [
-      "Data cleaning and preprocessing pipelines",
-      "Interactive charts showing grade distributions",
-      "Trend analysis across different subjects",
-      "Statistical summary reports",
-      "PDF export functionality for reports",
-      "Automated data validation and error handling"
-    ],
-    challenges: [
-      "Learning data manipulation with Pandas",
-      "Creating meaningful visualizations from raw data",
-      "Handling missing or inconsistent data entries",
-      "Optimizing performance for large datasets"
-    ],
-    outcomes: [
-      "Successfully analyzed 500+ student records",
-      "Identified key performance patterns and trends",
-      "Generated actionable insights for academic improvement",
-      "Gained proficiency in Python data science libraries"
-    ],
-    duration: "3 weeks",
-    role: "Data Analyst",
-    status: "Complete",
-    demoLink: "", // removed to test disabled state
-    githubLink: "https://github.com/bashairfan0911/professional_portfolio.git" 
-  },
+ 2: {
+  title: "AWS VPC & VPC Peering",
+  description:
+    "Architected and deployed secure, scalable Virtual Private Clouds on AWS with cross-account VPC peering to enable private communication between environments.",
+  longDescription:
+    "This project focused on mastering AWS networking fundamentals and implementing real-world connectivity between isolated networks. I created multiple VPCs with custom CIDR blocks, configured route tables, and established VPC peering to allow seamless and secure communication across accounts while minimizing latency and cost. Emphasis was placed on high availability, proper security group configurations, and infrastructure-as-code practices using CloudFormation.",
+  technologies: [
+    "AWS VPC",
+    "VPC Peering",
+    "EC2",
+    "Route Tables",
+    "Security Groups",
+    "CloudFormation",
+    "IAM"
+  ],
+  features: [
+    "Creation of multiple isolated VPCs with custom CIDR ranges",
+    "Cross-account VPC peering for secure private communication",
+    "Automated provisioning with AWS CloudFormation templates",
+    "Fine-grained access control using Security Groups and NACLs",
+    "High-availability design with multi-AZ subnets",
+    "Monitoring and cost optimization using AWS CloudWatch and Cost Explorer"
+  ],
+  challenges: [
+    "Designing non-overlapping CIDR blocks for multiple VPCs",
+    "Ensuring secure routing and preventing transitive peering",
+    "Balancing performance with cost when selecting peering options",
+    "Automating repeatable deployments using CloudFormation"
+  ],
+  outcomes: [
+    "Deployed 3 production-ready VPCs with successful peering connections",
+    "Reduced inter-service latency by approximately 25%",
+    "Lowered cross-VPC data transfer costs by ~15%",
+    "Strengthened understanding of AWS networking and infrastructure-as-code"
+  ],
+  duration: "4 weeks",
+  role: "Cloud Engineer",
+  status: "Complete",
+  demoLink: "", // leave empty if no live demo
+  githubLink: "https://github.com/bashairfan0911/vpc-and-vpc-peering.git"
+},
+
   3: {
     title: "Dockerized Web Application",
     description: "Containerized a simple web application using Docker, learned about multi-stage builds, and practiced container orchestration fundamentals.",
@@ -98,36 +109,41 @@ const projectsData = {
     demoLink: "https://professional-portfolio-theta-lac.vercel.app/", 
     githubLink: "" // removed to test disabled state
   },
-  4: {
-    title: "Weather Data Collector",
-    description: "Built a Python script that collects weather data from APIs, stores it in a database, and creates basic visualizations for trend analysis.",
-    longDescription: "This automation project demonstrates my ability to work with external APIs, implement data persistence, and create meaningful visualizations. The system runs continuously, collecting weather data and providing insights through automated reports and charts.",
-    technologies: ["Python", "REST APIs", "SQLite", "Requests", "Matplotlib"],
+    4: {
+    title: "Multi-Tier Retail Store Application",
+    description: "A containerized microservices e-commerce platform with a full GitOps CI/CD pipeline on AWS.",
+    longDescription: "This project is a multi-tier retail store application designed for production-ready deployment on AWS. The system separates the front-end, back-end, and database into independent containerized services. It uses Kubernetes (AWS EKS with Auto Mode) for orchestration and Terraform for infrastructure provisioning. A GitOps-based CI/CD pipeline (Argo CD for deployments and GitHub Actions for continuous integration) automates all builds and releases. The platform includes centralized inventory and order management across multiple store locations, demonstrating scalability and high availability. Real-time monitoring and logging are implemented via Grafana and Prometheus, providing insights into system performance and health.",
+    technologies: [
+      "Java", "Spring Boot", "React (TypeScript)", "Go", "Docker",
+      "Kubernetes (AWS EKS)", "AWS (EKS, RDS, etc.)", "Terraform", "Argo CD",
+      "Grafana", "Prometheus", "GitHub Actions"
+    ],
     features: [
-      "Automated data collection from weather APIs",
-      "SQLite database for efficient data storage",
-      "Error handling and retry mechanisms",
-      "Daily, weekly, and monthly trend analysis",
-      "Temperature, humidity, and pressure tracking",
-      "Automated report generation with charts"
+      "Multi-tier microservices architecture (separate UI, API, and database layers)",
+      "Automated GitOps deployment pipeline with Argo CD and GitHub Actions",
+      "AWS EKS Auto Mode for managed Kubernetes scaling",
+      "Centralized multi-store inventory and order tracking system",
+      "Comprehensive monitoring dashboards with Grafana and Prometheus",
+      "Automated infrastructure provisioning with Terraform"
     ],
     challenges: [
-      "Handling API rate limits and errors gracefully",
-      "Designing efficient database schema",
-      "Creating meaningful visualizations from time-series data",
-      "Implementing reliable scheduling and automation"
+      "Coordinating and deploying multiple containerized services across tiers",
+      "Building a robust CI/CD pipeline and GitOps workflow",
+      "Ensuring high availability and fault tolerance (targeting 99.9% uptime)",
+      "Designing a flexible database schema for multi-store inventory",
+      "Managing cloud resources and costs with autoscaling configurations"
     ],
     outcomes: [
-      "Successfully collected 7+ days of continuous weather data",
-      "Created insightful trend analysis and predictions",
-      "Learned API integration and error handling best practices",
-      "Gained experience with database design and management"
+      "Deployed a fully automated, multi-store retail system on AWS EKS with minimal manual intervention",
+      "Enabled rapid, reliable feature releases through a GitOps workflow",
+      "Achieved strong system reliability and observability with real-time monitoring",
+      "Gained hands-on experience with Kubernetes, Terraform, and cloud-native CI/CD best practices"
     ],
     duration: "1 week",
-    role: "Backend Developer",
+    role: "DevOps",
     status: "Complete",
-    demoLink: "", 
-    githubLink: "" 
+    demoLink: "http://k8s-ingressn-ingressn-458fe101d6-c35438a11e41fed0.elb.us-west-2.amazonaws.com/",
+    githubLink: "https://github.com/bashairfan0911/retail-store-sample-app.git"
   }
 };
 
