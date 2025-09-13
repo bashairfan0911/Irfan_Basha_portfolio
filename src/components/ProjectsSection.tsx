@@ -15,16 +15,18 @@ const projects = [
     status: "Live",
     link: "#"
   },
-  {
-    id: 2,
-    title: "Student Grade Analytics Dashboard",
-    description: "Created a Python-based data analysis project that processes student performance data and generates interactive visualizations to identify learning trends.",
-    technologies: ["Python", "Pandas", "Matplotlib", "Jupyter", "CSV"],
-    metrics: ["500+ records analyzed", "Interactive charts", "PDF reports"],
-    icon: Database,
-    status: "Complete",
-    link: "#"
-  },
+{
+  id: 2,
+  title: "AWS VPC & VPC Peering",
+  description:
+    "Designed and deployed secure, scalable Virtual Private Clouds with cross-account VPC peering to enable private communication between services while reducing latency and cost.",
+  technologies: ["AWS VPC", "VPC Peering", "EC2", "Route Tables", "Security Groups", "CloudFormation"],
+  metrics: ["3 Networks", "≈25% Latency Reduction", "≈15% Cost Optimization"], // array of strings
+  icon: Cloud, // use an imported lucide-react icon component
+  status: "Complete",
+  link: "#"
+},
+
   {
     id: 3,
     title: "Dockerized Web Application",

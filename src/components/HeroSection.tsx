@@ -85,8 +85,8 @@ export const HeroSection = () => {
             className="bg-primary hover:bg-primary/90 text-primary-foreground glow-effect transition-all duration-500 hover:scale-110 hover:rotate-1 transform"
           >
             <a 
-              href="/Irfan_Basha_CV.pdf"   // PDF must be in the public folder
-              download="Irfan_Basha_CV.pdf" // forces download with this filename
+              href="Irfan_Basha_resume.pdf"   // PDF must be in the public folder
+              download="Irfan_Basha_resume.pdf" // forces download with this filename
               target="_blank"
               rel="noopener noreferrer"
             >

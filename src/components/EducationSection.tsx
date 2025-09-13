@@ -5,11 +5,11 @@ import { GraduationCap, Calendar, MapPin, Award, BookOpen } from "lucide-react";
 const education = [
   {
     id: 1,
-    institution: "State University",
-    degree: "Bachelor of Technology in Computer Science",
-    duration: "2020 - 2024",
-    location: "City, State",
-    gpa: "3.7/4.0",
+    institution: "Aalim Muhammed Salegh College Of Engineering",
+    degree: "Bachelor of Computer Science and Engineering",
+    duration: "2021 - 2025",
+    location: "Chennai, TamilNadu",
+    gpa: "8/10",
     description: "Focused on software engineering, data structures, algorithms, and emerging technologies. Active member of coding club and tech society.",
     coursework: [
       "Data Structures & Algorithms",
@@ -20,25 +20,23 @@ const education = [
       "Computer Networks"
     ],
     achievements: [
-      "Dean's List for 3 consecutive semesters",
       "Best Project Award for final year capstone",
-      "Participated in 5+ hackathons",
-      "Led team of 4 in university tech fest"
+     
     ],
     status: "Graduated"
   },
   {
     id: 2,
     institution: "Online Learning Platforms",
-    degree: "Professional Development Courses",
-    duration: "2023 - Present",
+    degree: "AWS Certified Solutions Architect – Associate ",
+    duration: "6 Months",
     location: "Online",
     gpa: "",
     description: "Continuous learning through industry-recognized online courses to build practical skills in DevOps and Data Analytics.",
     coursework: [
-      "AWS Cloud Practitioner (Coursera)",
+      "AWS Certified Solutions Architect – Associate  (Udemy)",
       "Docker & Kubernetes (Udemy)",
-      "Python for Data Science (edX)",
+      "Python for Data Science (Coursera)",
       "Git & GitHub Masterclass",
       "Linux System Administration",
       "Introduction to DevOps"
@@ -46,18 +44,17 @@ const education = [
     achievements: [
       "Completed 15+ technical courses",
       "Built 10+ hands-on projects",
-      "Active on GitHub with 50+ commits",
       "Contributing to open-source projects"
     ],
-    status: "Ongoing"
+    status: "Completed"
   }
 ];
 
 const certifications = [
-  { name: "Python Programming", provider: "Coursera", year: "2024", status: "completed" },
-  { name: "Git & GitHub", provider: "Udemy", year: "2024", status: "completed" },
-  { name: "AWS Cloud Practitioner", provider: "AWS", year: "2024", status: "in-progress" },
-  { name: "Docker Fundamentals", provider: "Docker", year: "2024", status: "in-progress" }
+  { name: "Python Programming", provider: "Udemy", year: "2024", status: "completed" },
+  { name: "Git & GitHub", provider: "Great Learning ", year: "2024", status: "completed" },
+  { name: "AWS Certified Solutions Architect – Associate", provider: "AWS", year: "2025", status: "completed" },
+  { name: "Google Data Analytics Professional Certificate", provider: "Coursera", year: "2025", status: "Completed" }
 ];
 
 export const EducationSection = () => {
