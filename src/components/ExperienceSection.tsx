@@ -5,51 +5,58 @@ import { Building, Calendar, MapPin } from "lucide-react";
 const experiences = [
   {
     id: 1,
-    company: "TechCorp Solutions",
-    position: "Senior DevOps Engineer & Data Analyst",
-    duration: "2022 - Present",
-    location: "San Francisco, CA",
-    type: "Full-time",
-    description: "Leading infrastructure automation and data analytics initiatives across multi-cloud environments.",
+    company: "Retail Store Sample App - GitOps with Amazon EKS",
+    position: "DevOps Engineer & Cloud Architect",
+    duration: "2024 - 2025",
+    location: "Personal Project",
+    type: "Project",
+    description: "Deployed a production-grade microservices retail application on AWS EKS using GitOps principles with automated CI/CD pipeline. Implemented infrastructure as code with Terraform and continuous deployment with ArgoCD.",
     achievements: [
-      "Reduced infrastructure costs by 45% through optimization and automation",
-      "Built ML-powered monitoring system increasing incident detection by 90%",
-      "Led team of 6 engineers in migrating legacy systems to cloud-native architecture",
-      "Designed data pipelines processing 50TB+ daily with 99.99% reliability"
+      "Architected and deployed 5 microservices (UI, Catalog, Cart, Orders, Checkout) on AWS EKS Auto Mode",
+      "Implemented GitOps workflow with ArgoCD for automated deployments and rollbacks",
+      "Built CI/CD pipeline using GitHub Actions for automated Docker image builds and ECR pushes",
+      "Provisioned AWS infrastructure using Terraform including VPC, EKS cluster, and security groups",
+      "Configured NGINX Ingress Controller and Cert Manager for SSL/TLS termination",
+      "Set up Helm charts for each microservice with automated version updates on code changes",
+      "Implemented monitoring and observability with Prometheus and Grafana stack",
+      "Achieved zero-downtime deployments with automated health checks and rollback capabilities"
     ],
-    technologies: ["AWS", "Kubernetes", "Python", "Terraform", "Apache Spark"]
+    technologies: ["AWS EKS", "Terraform", "ArgoCD", "GitHub Actions", "Docker", "Kubernetes", "Helm", "NGINX", "ECR", "Prometheus", "Grafana"]
   },
   {
     id: 2,
-    company: "DataFlow Analytics",
-    position: "DevOps Engineer",
-    duration: "2020 - 2022",
-    location: "New York, NY",
-    type: "Full-time",
-    description: "Specialized in building scalable data infrastructure and implementing CI/CD best practices.",
+    company: "EkoMart - E-Commerce Platform",
+    position: "Full-Stack MERN Developer",
+    duration: "2024 - 2025",
+    location: "Personal Project",
+    type: "Project",
+    description: "Built a full-stack e-commerce application with admin panel, product management, shopping cart, and payment integration using the MERN stack (MongoDB, Express, React, Node.js).",
     achievements: [
-      "Implemented GitOps workflows reducing deployment time by 80%",
-      "Built real-time analytics platform serving 1M+ users",
-      "Achieved 99.9% uptime through proactive monitoring and automation",
-      "Mentored 4 junior engineers in DevOps best practices"
+      "Implemented user authentication with JWT and secure password hashing using Bcrypt",
+      "Integrated Razorpay payment gateway for seamless checkout experience",
+      "Built admin dashboard for product, category, and order management",
+      "Configured Cloudinary for efficient image storage and delivery",
+      "Developed RESTful APIs with Express and MongoDB for scalable backend",
+      "Created responsive UI with Material-UI and React Router for navigation",
+      "Deployed with Netlify (frontend) and configured for production environment"
     ],
-    technologies: ["Docker", "Jenkins", "Elasticsearch", "Redis", "PostgreSQL"]
+    technologies: ["React", "Node.js", "Express", "MongoDB", "JWT", "Razorpay", "Cloudinary", "Material-UI", "Vite"]
   },
   {
-    id: 3,
-    company: "CloudFirst Startup",
-    position: "Junior Data Engineer",
-    duration: "2018 - 2020",
-    location: "Austin, TX",
-    type: "Full-time",
-    description: "Focused on data pipeline development and infrastructure management for a fast-growing fintech startup.",
+    id: 2,
+    company: "Personal Projects & Learning",
+    position: "Self-Directed Learning",
+    duration: "2024 - Present",
+    location: "Remote",
+    type: "Self-Study",
+    description: "Building practical skills through hands-on projects and continuous learning in DevOps and data analytics.",
     achievements: [
-      "Designed ETL processes handling 10M+ transactions daily",
-      "Implemented automated testing reducing data quality issues by 70%",
-      "Built monitoring dashboards providing real-time business insights",
-      "Contributed to scaling infrastructure from 10K to 1M+ users"
+      "Developed portfolio website using React, TypeScript, and Tailwind CSS",
+      "Learning cloud technologies including AWS, Docker, and Kubernetes",
+      "Practicing CI/CD pipelines and infrastructure automation",
+      "Exploring data analysis tools and visualization techniques"
     ],
-    technologies: ["Python", "Apache Airflow", "MySQL", "AWS Lambda", "Grafana"]
+    technologies: ["React", "TypeScript", "Docker", "Git", "Linux", "Python"]
   }
 ];
 
@@ -59,10 +66,10 @@ export const ExperienceSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4">
-            <span className="text-gradient">Professional Experience</span>
+            <span className="text-gradient">Experience & Projects</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Progressive career growth with increasing responsibilities in DevOps and data analytics
+            Building skills through hands-on learning and personal projects
           </p>
         </div>
 

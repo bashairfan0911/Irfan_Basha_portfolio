@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, Download, ExternalLink } from "lucide-react";
+import { ChevronDown, FileText, FolderGit2 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const HeroSection = () => {
   const [displayedText, setDisplayedText] = useState("");
@@ -34,6 +35,13 @@ export const HeroSection = () => {
     
     return () => clearInterval(typeInterval);
   }, [currentRole]);
+
+  const scrollToProjects = () => {
+    const projectsSection = document.getElementById('projects');
+    if (projectsSection) {
+      projectsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <section className="min-h-screen hero-gradient relative flex items-center justify-center overflow-hidden">
@@ -79,34 +87,26 @@ export const HeroSection = () => {
           </p>
           
           <div className="flex flex-wrap gap-4 justify-center mb-16 animate-fade-in" style={{ animationDelay: '1.5s' }}>
-           <Button 
-            size="lg" 
-            asChild
-            className="bg-primary hover:bg-primary/90 text-primary-foreground glow-effect transition-all duration-500 hover:scale-110 hover:rotate-1 transform"
-          >
-            <a 
-              href="Irfan_Basha_resume.pdf"   // PDF must be in the public folder
-              download="Irfan_Basha_resume.pdf" // forces download with this filename
-              target="_blank"
-              rel="noopener noreferrer"
+            <Button 
+              size="lg" 
+              asChild
+              className="bg-primary hover:bg-primary/90 text-primary-foreground glow-effect transition-all duration-500 hover:scale-110 hover:rotate-1 transform"
             >
-              <Download className="mr-2 h-5 w-5 animate-bounce" />
-              Download CV
-            </a>
-          </Button>
+              <Link to="/cv">
+                <FileText className="mr-2 h-5 w-5 animate-bounce" />
+                View CV
+              </Link>
+            </Button>
 
             <Button 
               variant="outline" 
               size="lg" 
-              asChild
+              onClick={scrollToProjects}
               className="border-primary/30 text-primary hover:bg-primary/10 hover:border-primary tech-glow transition-all duration-500 hover:scale-110 hover:-rotate-1 transform"
             >
-              <a href="https://github.com/bashairfan0911" target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="mr-2 h-5 w-5 animate-pulse" />
-                View Projects
-              </a>
+              <FolderGit2 className="mr-2 h-5 w-5 animate-pulse" />
+              View Projects
             </Button>
-
           </div>
         </div>
         
