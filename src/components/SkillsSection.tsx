@@ -6,27 +6,29 @@ import { Code2, Server, Cloud, Database } from "lucide-react";
 interface Skill {
   name: string;
   level: number;
-  category: 'devops' | 'data' | 'cloud' | 'programming';
+  category: 'devops' | 'cloud' | 'container' | 'programming';
   icon: any;
 }
 
 const skills: Skill[] = [
-  { name: 'Python Programming', level: 75, category: 'programming', icon: Code2 },
-  { name: 'Git & GitHub', level: 80, category: 'devops', icon: Server },
-  { name: 'Docker Basics', level: 65, category: 'devops', icon: Server },
-  { name: 'AWS Fundamentals', level: 60, category: 'cloud', icon: Cloud },
-  { name: 'SQL & MySQL', level: 70, category: 'data', icon: Database },
-  { name: 'Linux Commands', level: 75, category: 'devops', icon: Server },
-  { name: 'Data Visualization', level: 68, category: 'data', icon: Database },
-  { name: 'HTML/CSS/JavaScript', level: 73, category: 'programming', icon: Code2 },
-  { name: 'Pandas & NumPy', level: 65, category: 'data', icon: Database },
-  { name: 'Cloud Computing', level: 58, category: 'cloud', icon: Cloud },
+  { name: 'AWS (EC2, EKS, ECR, VPC)', level: 85, category: 'cloud', icon: Cloud },
+  { name: 'Azure & GCP', level: 70, category: 'cloud', icon: Cloud },
+  { name: 'Docker & Kubernetes', level: 85, category: 'container', icon: Server },
+  { name: 'Helm Charts', level: 80, category: 'container', icon: Server },
+  { name: 'Terraform & IaC', level: 85, category: 'devops', icon: Code2 },
+  { name: 'Jenkins & ArgoCD', level: 80, category: 'devops', icon: Server },
+  { name: 'GitHub Actions', level: 85, category: 'devops', icon: Server },
+  { name: 'Prometheus & Grafana', level: 75, category: 'devops', icon: Database },
+  { name: 'Ansible & YAML', level: 75, category: 'devops', icon: Code2 },
+  { name: 'Python & Shell Scripting', level: 80, category: 'programming', icon: Code2 },
+  { name: 'SQL & NoSQL', level: 75, category: 'programming', icon: Database },
+  { name: 'Linux Administration', level: 85, category: 'programming', icon: Server },
 ];
 
 const categoryColors = {
   devops: 'bg-primary/10 text-primary border-primary/20',
-  data: 'bg-data-viz/10 text-data-viz border-data-viz/20',
   cloud: 'bg-tech-accent/10 text-tech-accent border-tech-accent/20',
+  container: 'bg-data-viz/10 text-data-viz border-data-viz/20',
   programming: 'bg-warning/10 text-warning border-warning/20',
 };
 
@@ -59,7 +61,7 @@ export const SkillsSection = () => {
             <span className="text-gradient">Technical Skills</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Currently developing skills through coursework, online learning, and hands-on practice
+            Production-ready DevOps and Cloud expertise with hands-on experience in modern infrastructure
           </p>
         </div>
 
@@ -101,11 +103,11 @@ export const SkillsSection = () => {
           })}
         </div>
 
-        {/* Learning Resources */}
+        {/* Skill Categories */}
         <div className="mt-16 text-center">
-          <h3 className="text-2xl font-bold mb-8 text-gradient">Learning Journey</h3>
+          <h3 className="text-2xl font-bold mb-8 text-gradient">Core Competencies</h3>
           <div className="flex flex-wrap justify-center gap-4">
-            {['Online Courses (Coursera, Udemy)', 'AWS Free Tier Practice', 'GitHub Personal Projects', 'Tech Community Forums'].map((resource) => (
+            {['Cloud Platforms (AWS, Azure, GCP)', 'Container Technologies', 'Infrastructure as Code', 'CI/CD & GitOps', 'Monitoring & Observability', 'Configuration Management'].map((resource) => (
               <Badge key={resource} variant="outline" className="px-4 py-2 text-sm border-primary/30 text-primary hover:bg-primary/10">
                 {resource}
               </Badge>

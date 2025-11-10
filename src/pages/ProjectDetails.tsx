@@ -34,7 +34,8 @@ const projectsData = {
     role: "Solo Developer",
     status: "Live",
     demoLink: "https://professional-portfolio-theta-lac.vercel.app/", 
-    githubLink: "https://github.com/bashairfan0911/professional_portfolio.git" 
+    githubLink: "https://github.com/bashairfan0911/professional_portfolio.git",
+    image: "/images/portfolio.png"
   },
  2: {
   title: "AWS VPC & VPC Peering",
@@ -74,42 +75,12 @@ const projectsData = {
   duration: "4 weeks",
   role: "Cloud Engineer",
   status: "Complete",
-  demoLink: "", // leave empty if no live demo
-  githubLink: "https://github.com/bashairfan0911/vpc-and-vpc-peering.git"
+  demoLink: "",
+  githubLink: "https://github.com/bashairfan0911/vpc-and-vpc-peering.git",
+  image: "/images/vpcandvpcpeering.png"
 },
 
   3: {
-    title: "Dockerized Web Application",
-    description: "Containerized a simple web application using Docker, learned about multi-stage builds, and practiced container orchestration fundamentals.",
-    longDescription: "This project focused on learning containerization technologies and DevOps practices. I took a basic web application and transformed it into a fully containerized solution with proper orchestration, demonstrating understanding of modern deployment strategies.",
-    technologies: ["Docker", "Node.js", "HTML/CSS", "Docker Compose", "GitHub"],
-    features: [
-      "Multi-stage Docker builds for optimization",
-      "Docker Compose for multi-container orchestration",
-      "Environment-specific configurations",
-      "Automated health checks and monitoring",
-      "Volume management for persistent data",
-      "Network configuration for container communication"
-    ],
-    challenges: [
-      "Understanding Docker concepts and best practices",
-      "Optimizing container images for size and performance",
-      "Managing container networking and volumes",
-      "Implementing proper security measures"
-    ],
-    outcomes: [
-      "Reduced deployment complexity and errors",
-      "Improved application portability across environments",
-      "Gained hands-on experience with containerization",
-      "Understanding of modern DevOps workflows"
-    ],
-    duration: "2 weeks",
-    role: "DevOps Learner",
-    status: "Learning",
-    demoLink: "https://professional-portfolio-theta-lac.vercel.app/", 
-    githubLink: "" // removed to test disabled state
-  },
-    4: {
     title: "Multi-Tier Retail Store Application",
     description: "A containerized microservices e-commerce platform with a full GitOps CI/CD pipeline on AWS.",
     longDescription: "This project is a multi-tier retail store application designed for production-ready deployment on AWS. The system separates the front-end, back-end, and database into independent containerized services. It uses Kubernetes (AWS EKS with Auto Mode) for orchestration and Terraform for infrastructure provisioning. A GitOps-based CI/CD pipeline (Argo CD for deployments and GitHub Actions for continuous integration) automates all builds and releases. The platform includes centralized inventory and order management across multiple store locations, demonstrating scalability and high availability. Real-time monitoring and logging are implemented via Grafana and Prometheus, providing insights into system performance and health.",
@@ -143,7 +114,136 @@ const projectsData = {
     role: "DevOps",
     status: "Complete",
     demoLink: "http://k8s-ingressn-ingressn-458fe101d6-c35438a11e41fed0.elb.us-west-2.amazonaws.com/",
-    githubLink: "https://github.com/bashairfan0911/retail-store-sample-app.git"
+    githubLink: "https://github.com/bashairfan0911/retail-store-sample-app.git",
+    image: "/images/EKS.gif"
+  },
+  4: {
+    title: "EkoMart - E-Commerce Platform",
+    description: "Full-stack MERN e-commerce application with admin panel, product management, shopping cart, and Razorpay payment integration.",
+    longDescription: "EkoMart is a comprehensive e-commerce platform built using the MERN stack (MongoDB, Express, React, Node.js). The application features a complete shopping experience with user authentication, product browsing, cart management, and secure payment processing. The admin panel provides full control over products, categories, and orders. The platform demonstrates modern full-stack development practices with RESTful API design, JWT authentication, cloud-based image storage, and responsive UI design.",
+    technologies: ["React", "Node.js", "Express", "MongoDB", "JWT", "Razorpay", "Cloudinary", "Material-UI", "Vite", "Bcrypt"],
+    features: [
+      "User authentication and authorization with JWT tokens",
+      "Secure password hashing using Bcrypt",
+      "Product catalog with categories and search functionality",
+      "Shopping cart with add, update, and remove operations",
+      "Razorpay payment gateway integration for secure checkout",
+      "Admin dashboard for product, category, and order management",
+      "Cloudinary integration for optimized image storage and delivery",
+      "Responsive design with Material-UI components",
+      "RESTful API architecture with Express and MongoDB",
+      "User profile management and order history"
+    ],
+    challenges: [
+      "Implementing secure authentication flow with JWT and refresh tokens",
+      "Integrating Razorpay payment gateway and handling payment callbacks",
+      "Managing complex state across multiple components in React",
+      "Optimizing image uploads and storage with Cloudinary",
+      "Designing scalable MongoDB schemas for products, users, and orders",
+      "Implementing role-based access control for admin features"
+    ],
+    outcomes: [
+      "Successfully deployed full-stack e-commerce platform with payment processing",
+      "Implemented secure authentication system protecting user data",
+      "Created intuitive admin panel for efficient store management",
+      "Achieved responsive design working seamlessly across all devices",
+      "Gained hands-on experience with MERN stack and third-party integrations",
+      "Built scalable RESTful APIs following industry best practices"
+    ],
+    duration: "3 weeks",
+    role: "Full-Stack Developer",
+    status: "Live",
+    demoLink: "https://ekomart.netlify.app/",
+    githubLink: "https://github.com/bashairfan0911/EkoMart.git",
+    image: "/images/DevSecOps+GitOps.gif"
+  },
+  5: {
+    title: "Wanderlust - Travel Blog Platform",
+    description: "MERN stack travel blog platform deployed on Kubernetes with Docker containerization and complete DevOps pipeline.",
+    longDescription: "Wanderlust is a comprehensive travel blog platform built with the MERN stack and deployed on Kubernetes. This project demonstrates advanced DevOps practices including container orchestration, persistent storage management, and microservices architecture. The application uses MongoDB for data persistence, Redis for caching, and is fully containerized with Docker. Deployed on a Kubernetes cluster with proper resource management, DNS resolution, and service discovery. The project showcases production-ready deployment strategies with persistent volumes, config management, and scalable architecture suitable for high-traffic applications.",
+    image: "/images/wanderlust.png",
+    technologies: ["React", "Node.js", "Express", "MongoDB", "Redis", "Kubernetes", "Docker", "Persistent Volumes", "AWS EC2", "Kubeadm"],
+    features: [
+      "Full MERN stack travel blog with user authentication",
+      "Kubernetes deployment with persistent volume claims for data persistence",
+      "Redis caching layer for improved performance",
+      "MongoDB with persistent storage using Kubernetes PVs and PVCs",
+      "Multi-node Kubernetes cluster setup with kubeadm",
+      "DNS resolution with CoreDNS for service discovery",
+      "Docker containerization with optimized images",
+      "Environment-based configuration management",
+      "NodePort service exposure for external access",
+      "Scalable microservices architecture with separate frontend and backend services"
+    ],
+    challenges: [
+      "Setting up multi-node Kubernetes cluster on AWS EC2 instances",
+      "Configuring persistent volumes and claims for stateful applications",
+      "Managing DNS resolution and CoreDNS pod distribution across nodes",
+      "Connecting backend services to MongoDB and Redis within Kubernetes",
+      "Building and pushing Docker images to DockerHub registry",
+      "Ensuring proper service discovery and inter-pod communication",
+      "Managing environment variables across different deployment environments",
+      "Debugging pod connectivity and service networking issues"
+    ],
+    outcomes: [
+      "Successfully deployed production-ready travel blog on Kubernetes cluster",
+      "Implemented persistent storage ensuring data survives pod restarts",
+      "Achieved scalable architecture with independent frontend and backend services",
+      "Mastered Kubernetes concepts including deployments, services, PVs, and PVCs",
+      "Gained hands-on experience with container orchestration and microservices",
+      "Built complete CI/CD workflow from code to Kubernetes deployment",
+      "Enhanced understanding of cloud-native application architecture",
+      "Demonstrated ability to troubleshoot and resolve complex deployment issues"
+    ],
+    duration: "2 weeks",
+    role: "DevOps Engineer",
+    status: "Complete",
+    demoLink: "",
+    githubLink: "https://github.com/bashairfan0911/wanderlust.git"
+  },
+  6: {
+    title: "DevSecOps Pipeline - Wanderlust",
+    description: "End-to-end DevSecOps implementation with Jenkins CI/CD, OWASP dependency scanning, SonarQube code quality analysis, Trivy security scanning, and GitOps deployment using ArgoCD on AWS EKS.",
+    longDescription: "This project demonstrates a complete DevSecOps pipeline implementation for the Wanderlust travel blog application. Built on AWS EKS with a focus on security, automation, and GitOps principles, the pipeline integrates multiple security scanning tools at different stages. Jenkins orchestrates the CI process with OWASP dependency checks, SonarQube code quality analysis, and Trivy container security scanning. ArgoCD handles continuous deployment using GitOps methodology, automatically syncing Kubernetes manifests from Git. The infrastructure includes comprehensive monitoring with Prometheus and Grafana, providing real-time insights into application performance and cluster health. This project showcases industry-standard DevSecOps practices with automated security gates, quality checks, and zero-downtime deployments.",
+    image: "/images/DevSecOps+GitOps.gif",
+    technologies: ["Jenkins", "ArgoCD", "SonarQube", "Trivy", "OWASP", "AWS EKS", "Helm", "Prometheus", "Grafana", "Docker", "Kubernetes", "eksctl"],
+    features: [
+      "Jenkins CI pipeline with master-worker architecture for distributed builds",
+      "OWASP Dependency-Check for identifying vulnerable dependencies",
+      "SonarQube integration for code quality and security vulnerability analysis",
+      "Trivy filesystem and container image scanning for security vulnerabilities",
+      "GitOps deployment workflow with ArgoCD for automated Kubernetes deployments",
+      "AWS EKS cluster provisioned with eksctl and managed node groups",
+      "Helm charts for Prometheus and Grafana monitoring stack deployment",
+      "Email notifications for pipeline status and build results",
+      "Multi-stage Docker builds with security best practices",
+      "Automated webhook integration between GitHub, Jenkins, SonarQube, and ArgoCD"
+    ],
+    challenges: [
+      "Configuring Jenkins master-worker setup with proper SSH authentication",
+      "Integrating multiple security scanning tools into a cohesive pipeline",
+      "Setting up SonarQube webhooks and quality gates for automated checks",
+      "Managing ArgoCD cluster authentication and repository connections",
+      "Configuring AWS EKS with proper IAM roles and OIDC provider",
+      "Implementing secure credential management across pipeline stages",
+      "Troubleshooting Docker socket permissions for container operations",
+      "Setting up Prometheus and Grafana with proper service exposure"
+    ],
+    outcomes: [
+      "Deployed fully automated DevSecOps pipeline with security scanning at every stage",
+      "Achieved GitOps-based deployment with ArgoCD for declarative infrastructure",
+      "Implemented comprehensive monitoring with Prometheus and Grafana dashboards",
+      "Reduced deployment time and manual errors through automation",
+      "Enhanced security posture with multiple scanning tools and quality gates",
+      "Gained hands-on experience with industry-standard DevSecOps tools and practices",
+      "Built production-ready CI/CD pipeline following security best practices",
+      "Demonstrated ability to integrate and orchestrate complex toolchains"
+    ],
+    duration: "3 weeks",
+    role: "DevSecOps Engineer",
+    status: "Complete",
+    demoLink: "",
+    githubLink: "https://github.com/bashairfan0911/wanderlust.git"
   }
 };
 
@@ -196,6 +296,17 @@ export const ProjectDetails = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
+            {/* Project Image */}
+            {project.image && (
+              <Card className="card-gradient border-border/50 overflow-hidden">
+                <img 
+                  src={project.image} 
+                  alt={project.title}
+                  className="w-full h-auto object-cover"
+                />
+              </Card>
+            )}
+
             {/* Project Overview */}
             <Card className="card-gradient border-border/50 p-8">
               <h2 className="text-2xl font-semibold mb-4 text-card-foreground">Project Overview</h2>
