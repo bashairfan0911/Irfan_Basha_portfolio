@@ -1,0 +1,22 @@
+{
+  "redirects": [
+    {
+      "source": "/interview-notes",
+      "destination": "https://interviews.prodevopsguytech.com/",
+      "permanent": false
+    },
+    {
+      "source": "/notes",
+      "destination": "https://docs.google.com/document/d/14z5K1lSAm9FC7QYOqhczLwscymkwigBjj23BzfmiNmM/edit?usp=sharing",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist"
+}
