@@ -1,42 +1,71 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Cloud, Container, Settings, GitBranch, Activity, Code, Server, Award } from "lucide-react";
+import { Activity, Code, Server, Award } from "lucide-react";
+import { FaAws, FaDocker, FaPython, FaGitAlt, FaJenkins, FaJava } from "react-icons/fa";
+import { SiGooglecloud, SiKubernetes, SiTerraform, SiPrometheus, SiGrafana, SiAnsible } from "react-icons/si";
+
+// Azure Icon Component
+const AzureIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M22.379 23.343a1.62 1.62 0 0 0 1.536-2.14v.002L17.35 1.76A1.62 1.62 0 0 0 15.816.657H8.184A1.62 1.62 0 0 0 6.65 1.76L.086 21.204a1.62 1.62 0 0 0 1.536 2.139h4.741a1.62 1.62 0 0 0 1.535-1.103l.977-2.892 4.947 3.675c.28.208.618.32.966.32h7.591m-3.096-3.24h-5.883l-2.286-6.845 5.07-8.735 3.099 15.58" />
+  </svg>
+);
 
 const technicalSkills = [
   {
-    category: "Cloud Platforms",
-    icon: Cloud,
-    skills: ["Amazon Web Services (AWS)", "Microsoft Azure", "Google Cloud Platform (GCP)"]
+    category: "Amazon Web Services (AWS)",
+    icon: FaAws,
+    skills: ["EC2", "EKS", "ECR", "VPC", "S3", "Lambda", "CloudWatch", "IAM"]
+  },
+  {
+    category: "Microsoft Azure",
+    icon: AzureIcon,
+    skills: ["Azure AKS", "Azure Container Registry", "Azure DevOps", "Virtual Networks"]
+  },
+  {
+    category: "Google Cloud Platform (GCP)",
+    icon: SiGooglecloud,
+    skills: ["Compute Engine", "GKE", "Cloud Storage", "Cloud Functions"]
   },
   {
     category: "Container Technologies",
-    icon: Container,
+    icon: FaDocker,
     skills: ["Docker", "Kubernetes", "Helm Charts"]
   },
   {
-    category: "Infrastructure Automation",
-    icon: Settings,
-    skills: ["Terraform", "AWS CLI", "Infrastructure as Code"]
+    category: "Kubernetes",
+    icon: SiKubernetes,
+    skills: ["EKS", "AKS", "GKE", "Deployments", "Services", "Ingress"]
+  },
+  {
+    category: "Infrastructure as Code",
+    icon: SiTerraform,
+    skills: ["Terraform", "AWS CLI", "CloudFormation"]
   },
   {
     category: "CI/CD & GitOps",
-    icon: GitBranch,
-    skills: ["Jenkins", "ArgoCD", "Git", "GitHub Actions"]
+    icon: FaJenkins,
+    skills: ["Jenkins", "ArgoCD", "GitHub Actions"]
+  },
+  {
+    category: "Version Control",
+    icon: FaGitAlt,
+    skills: ["Git", "GitHub", "GitLab"]
   },
   {
     category: "Monitoring & Observability",
-    icon: Activity,
+    icon: SiPrometheus,
     skills: ["Prometheus", "Grafana", "CloudWatch", "Log Analysis"]
   },
   {
     category: "Configuration Management",
-    icon: Server,
+    icon: SiAnsible,
     skills: ["Ansible", "YAML Manifests"]
   },
   {
-    category: "Programming",
-    icon: Code,
-    skills: ["Python", "Shell Scripting", "SQL/NoSQL"]
+    category: "Programming Languages",
+    icon: FaPython,
+    skills: ["Python", "Java", "Shell Scripting", "SQL/NoSQL"]
   },
   {
     category: "Operating Systems",
@@ -116,7 +145,7 @@ export const TechnicalExpertise = () => {
             {technicalSkills.map((category, index) => {
               const IconComponent = category.icon;
               return (
-                <Card 
+                <Card
                   key={category.category}
                   className="card-gradient border-border/50 p-6 hover:scale-[1.02] transition-all duration-300 animate-fade-in"
                   style={{ animationDelay: `${index * 100}ms` }}
@@ -149,7 +178,7 @@ export const TechnicalExpertise = () => {
             {certifications.map((cert, index) => {
               const IconComponent = cert.icon;
               return (
-                <Card 
+                <Card
                   key={cert.title}
                   className="card-gradient border-border/50 p-6 hover:scale-[1.01] transition-all duration-300 animate-fade-in"
                   style={{ animationDelay: `${index * 200}ms` }}
@@ -162,7 +191,7 @@ export const TechnicalExpertise = () => {
                       <h4 className="text-xl font-semibold text-card-foreground mb-2">{cert.title}</h4>
                       <p className="text-muted-foreground mb-2">{cert.issuer}</p>
                       <p className="text-sm text-muted-foreground mb-3">{cert.validity}</p>
-                      <a 
+                      <a
                         href={cert.credentialUrl}
                         target="_blank"
                         rel="noopener noreferrer"

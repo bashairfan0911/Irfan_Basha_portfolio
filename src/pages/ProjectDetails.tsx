@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, ExternalLink, Github, Calendar, Users, Target } from "lucide-react";
+import { ArrowLeft, ExternalLink, Github, Calendar, Users, Target, FileText, BookOpen } from "lucide-react";
 
 const projectsData = {
   1: {
@@ -35,6 +35,8 @@ const projectsData = {
     status: "Live",
     demoLink: "https://professional-portfolio-theta-lac.vercel.app/", 
     githubLink: "https://github.com/bashairfan0911/professional_portfolio.git",
+    notesLink: "https://docs.google.com/document/d/14z5K1lSAm9FC7QYOqhczLwscymkwigBjj23BzfmiNmM/edit?usp=sharing",
+    interviewNotesLink: "https://interviews.prodevopsguytech.com/",
     image: "/images/portfolio.png"
   },
  2: {
@@ -470,6 +472,32 @@ export const ProjectDetails = () => {
                   </>
                 )}
               </Button>
+
+              {project.notesLink && (
+                <Button
+                  variant="outline"
+                  className="w-full border-primary/30 text-primary hover:bg-primary/10"
+                  asChild
+                >
+                  <a href={project.notesLink} target="_blank" rel="noopener noreferrer">
+                    <FileText className="mr-2 h-4 w-4" />
+                    Project Notes
+                  </a>
+                </Button>
+              )}
+
+              {project.interviewNotesLink && (
+                <Button
+                  variant="outline"
+                  className="w-full border-primary/30 text-primary hover:bg-primary/10"
+                  asChild
+                >
+                  <a href={project.interviewNotesLink} target="_blank" rel="noopener noreferrer">
+                    <BookOpen className="mr-2 h-4 w-4" />
+                    Interview Notes
+                  </a>
+                </Button>
+              )}
             </div>
           </div>
         </div>
