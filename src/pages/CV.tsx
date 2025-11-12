@@ -29,7 +29,7 @@ const CV = () => {
               </p>
             </div>
             
-            <a href="/IRFAN_BASHA_devops.pdf" download>
+            <a href="/images/IRFAN_BASHA_devops.pdf" download="Irfan_Basha_Resume.pdf">
               <Button className="bg-primary hover:bg-primary/90">
                 <Download className="w-4 h-4 mr-2" />
                 Download PDF
