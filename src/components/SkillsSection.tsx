@@ -1,7 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Code2, Server, Cloud, Database } from "lucide-react";
+import { Database } from "lucide-react";
+import { FaAws, FaDocker, FaPython, FaGitAlt, FaJenkins, FaJava } from "react-icons/fa";
+import { SiGooglecloud, SiKubernetes, SiTerraform, SiPrometheus, SiAnsible } from "react-icons/si";
+
+// Azure Icon Component
+const AzureIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M22.379 23.343a1.62 1.62 0 0 0 1.536-2.14v.002L17.35 1.76A1.62 1.62 0 0 0 15.816.657H8.184A1.62 1.62 0 0 0 6.65 1.76L.086 21.204a1.62 1.62 0 0 0 1.536 2.139h4.741a1.62 1.62 0 0 0 1.535-1.103l.977-2.892 4.947 3.675c.28.208.618.32.966.32h7.591m-3.096-3.24h-5.883l-2.286-6.845 5.07-8.735 3.099 15.58"/>
+  </svg>
+);
 
 interface Skill {
   name: string;
@@ -11,18 +20,19 @@ interface Skill {
 }
 
 const skills: Skill[] = [
-  { name: 'AWS (EC2, EKS, ECR, VPC)', level: 85, category: 'cloud', icon: Cloud },
-  { name: 'Azure & GCP', level: 70, category: 'cloud', icon: Cloud },
-  { name: 'Docker & Kubernetes', level: 85, category: 'container', icon: Server },
-  { name: 'Helm Charts', level: 80, category: 'container', icon: Server },
-  { name: 'Terraform & IaC', level: 85, category: 'devops', icon: Code2 },
-  { name: 'Jenkins & ArgoCD', level: 80, category: 'devops', icon: Server },
-  { name: 'GitHub Actions', level: 85, category: 'devops', icon: Server },
-  { name: 'Prometheus & Grafana', level: 75, category: 'devops', icon: Database },
-  { name: 'Ansible & YAML', level: 75, category: 'devops', icon: Code2 },
-  { name: 'Python & Shell Scripting', level: 80, category: 'programming', icon: Code2 },
+  { name: 'AWS (EC2, EKS, ECR, VPC)', level: 85, category: 'cloud', icon: FaAws },
+  { name: 'Microsoft Azure (AKS, ACR)', level: 75, category: 'cloud', icon: AzureIcon },
+  { name: 'Google Cloud Platform (GCP)', level: 70, category: 'cloud', icon: SiGooglecloud },
+  { name: 'Docker', level: 85, category: 'container', icon: FaDocker },
+  { name: 'Kubernetes', level: 85, category: 'container', icon: SiKubernetes },
+  { name: 'Terraform & IaC', level: 85, category: 'devops', icon: SiTerraform },
+  { name: 'Jenkins', level: 80, category: 'devops', icon: FaJenkins },
+  { name: 'Git & GitHub', level: 85, category: 'devops', icon: FaGitAlt },
+  { name: 'Prometheus & Grafana', level: 75, category: 'devops', icon: SiPrometheus },
+  { name: 'Ansible', level: 75, category: 'devops', icon: SiAnsible },
+  { name: 'Python', level: 80, category: 'programming', icon: FaPython },
+  { name: 'Java', level: 75, category: 'programming', icon: FaJava },
   { name: 'SQL & NoSQL', level: 75, category: 'programming', icon: Database },
-  { name: 'Linux Administration', level: 85, category: 'programming', icon: Server },
 ];
 
 const categoryColors = {
@@ -81,17 +91,17 @@ export const SkillsSection = () => {
                     {skill.category.toUpperCase()}
                   </Badge>
                 </div>
-              
+
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Proficiency</span>
                     <span className="text-primary font-medium">{skill.level}%</span>
                   </div>
-                  
+
                   <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                    <div 
+                    <div
                       className="h-full bg-gradient-to-r from-primary to-tech-accent rounded-full transition-all duration-1000 ease-out"
-                      style={{ 
+                      style={{
                         width: isVisible ? `${skill.level}%` : '0%',
                         transitionDelay: `${index * 100}ms`
                       }}

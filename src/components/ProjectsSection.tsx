@@ -17,19 +17,6 @@ const projects = [
     link: "#",
     image: "/images/portfolio.png"
   },
-{
-  id: 2,
-  title: "AWS VPC & VPC Peering",
-  description:
-    "Designed and deployed secure, scalable Virtual Private Clouds with cross-account VPC peering to enable private communication between services while reducing latency and cost.",
-  technologies: ["AWS VPC", "VPC Peering", "EC2", "Route Tables", "Security Groups", "CloudFormation"],
-  metrics: ["3 Networks", "≈25% Latency Reduction", "≈15% Cost Optimization"],
-  icon: Cloud,
-  status: "Complete",
-  link: "#",
-  image: "/images/Vpc.png"
-},
-
   {
     id: 3,
     title: "Multi-tier Retail Store Application",
@@ -40,6 +27,17 @@ const projects = [
     status: "Complete",
     link: "#",
     image: "/images/retail.png"
+  },
+  {
+    id: 7,
+    title: "Microservices Voting Application with Azure CI/CD Pipeline",
+    description: "Architected cloud-native voting application with 5 microservices using Python (Flask), .NET Core, Node.js, Redis, and PostgreSQL on Azure Kubernetes Service. Built automated CI/CD pipeline using GitHub Actions with multi-platform Docker builds and dual registry strategy.",
+    technologies: ["Python", "Flask", ".NET Core", "Node.js", "Redis", "PostgreSQL", "Azure AKS", "GitHub Actions", "Docker", "Kubernetes", "WebSockets"],
+    metrics: ["5 Microservices", "90% Faster Deploy", "70% CI/CD Efficiency"],
+    icon: Vote,
+    status: "Complete",
+    link: "#",
+    image: "/images/azure.png",
   },
   {
     id: 4,
@@ -75,15 +73,15 @@ const projects = [
     image: "/images/wanderlust.png",
   },
   {
-    id: 7,
-    title: "Microservices Voting Application with Azure CI/CD Pipeline",
-    description: "Architected cloud-native voting application with 5 microservices using Python (Flask), .NET Core, Node.js, Redis, and PostgreSQL on Azure Kubernetes Service. Built automated CI/CD pipeline using GitHub Actions with multi-platform Docker builds and dual registry strategy.",
-    technologies: ["Python", "Flask", ".NET Core", "Node.js", "Redis", "PostgreSQL", "Azure AKS", "GitHub Actions", "Docker", "Kubernetes", "WebSockets"],
-    metrics: ["5 Microservices", "90% Faster Deploy", "70% CI/CD Efficiency"],
-    icon: Vote,
+    id: 2,
+    title: "AWS VPC & VPC Peering",
+    description: "Designed and deployed secure, scalable Virtual Private Clouds with cross-account VPC peering to enable private communication between services while reducing latency and cost.",
+    technologies: ["AWS VPC", "VPC Peering", "EC2", "Route Tables", "Security Groups", "CloudFormation"],
+    metrics: ["3 Networks", "≈25% Latency Reduction", "≈15% Cost Optimization"],
+    icon: Cloud,
     status: "Complete",
     link: "#",
-    image: "/images/azure.png",
+    image: "/images/vpcandvpcpeering.png"
   }
 ];
 
