@@ -54,6 +54,41 @@ const certifications = [
     icon: Award
   },
   {
+    title: "Oracle Cloud Infrastructure 2025 Certified DevOps Professional",
+    issuer: "Oracle",
+    credentialUrl: "https://catalog-education.oracle.com/pls/certview/sharebadge?id=C8F2CA3627E56BB3A2A887C1F257481548DA7B2A20CF1E747FB5F2893B3A43BB",
+    validity: "Issued: 2025",
+    icon: Award
+  },
+  {
+    title: "Oracle Cloud Infrastructure 2025 Certified AI Foundations Associate",
+    issuer: "Oracle",
+    credentialUrl: "https://catalog-education.oracle.com/pls/certview/sharebadge?id=3856E0F59B786EAEBCBB0D0FA8AC1FD92B0027CDA96A7AF0EAFE77F1078A479E",
+    validity: "Issued: 2025",
+    icon: Award
+  },
+  {
+    title: "Oracle Cloud Infrastructure 2025 Certified Multicloud Architect Professional",
+    issuer: "Oracle",
+    credentialUrl: "https://catalog-education.oracle.com/pls/certview/sharebadge?id=50E592F48CBB302BE2304939448ED70492FCA5B1855170FDCF2013A26E106BBE",
+    validity: "Issued: 2025",
+    icon: Award
+  },
+  {
+    title: "Oracle Analytics Cloud",
+    issuer: "Oracle",
+    credentialUrl: "https://catalog-education.oracle.com/pls/certview/sharebadge?id=6109577756FDC4BDD9D3E711C9C2BC946F293D82EEA2F6C93FAF07F8D6508F68",
+    validity: "September 2025 - September 2027",
+    icon: Award
+  },
+  {
+    title: "MongoDB Node.js Developer Path",
+    issuer: "MongoDB for SmartBridge",
+    credentialUrl: "https://learn.mongodb.com/c/4lcMpkcbT2qLXmVqnGyIEw",
+    validity: "Certification ID: MDBuj0lzlt386",
+    icon: Award
+  },
+  {
     title: "Google Data Analytics Professional Certificate",
     issuer: "Google",
     credentialUrl: "https://www.credly.com/badges/dc2deaa4-1d54-40c1-b8e6-5be2badfb151/public_url",
@@ -88,7 +123,7 @@ export const TechnicalExpertise = () => {
                 >
                   <div className="flex items-center gap-3 mb-4">
                     <div className="p-2 rounded-lg bg-primary/10">
-                      <IconComponent className="w-5 h-5 text-primary" />
+                      <IconComponent className="w-6 h-6 text-primary" />
                     </div>
                     <h3 className="text-lg font-semibold text-card-foreground">{category.category}</h3>
                   </div>
@@ -106,11 +141,11 @@ export const TechnicalExpertise = () => {
         </div>
 
         {/* Certifications */}
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <h3 className="text-3xl font-bold text-center mb-8">
             <span className="text-gradient">Certifications</span>
           </h3>
-          <div className="space-y-6">
+          <div className="grid md:grid-cols-2 gap-6">
             {certifications.map((cert, index) => {
               const IconComponent = cert.icon;
               return (

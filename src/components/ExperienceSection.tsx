@@ -93,7 +93,7 @@ export const ExperienceSection = () => {
                       <div className="flex flex-col lg:flex-row lg:items-start gap-6">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-3">
-                            <Building className="w-5 h-5 text-primary" />
+                            <Building className="w-6 h-6 text-primary" />
                             <h3 className="text-xl font-semibold text-card-foreground">{exp.company}</h3>
                             <Badge className="bg-primary/10 text-primary border-primary/20">
                               {exp.type}
@@ -104,11 +104,11 @@ export const ExperienceSection = () => {
                           
                           <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
                             <div className="flex items-center gap-1">
-                              <Calendar className="w-4 h-4" />
+                              <Calendar className="w-5 h-5" />
                               {exp.duration}
                             </div>
                             <div className="flex items-center gap-1">
-                              <MapPin className="w-4 h-4" />
+                              <MapPin className="w-5 h-5" />
                               {exp.location}
                             </div>
                           </div>

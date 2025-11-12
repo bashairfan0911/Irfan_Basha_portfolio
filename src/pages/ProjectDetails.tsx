@@ -244,6 +244,50 @@ const projectsData = {
     status: "Complete",
     demoLink: "",
     githubLink: "https://github.com/bashairfan0911/wanderlust.git"
+  },
+  7: {
+    title: "Microservices Voting Application with Azure CI/CD Pipeline",
+    description: "Architected cloud-native voting application with 5 microservices using Python (Flask), .NET Core, Node.js, Redis, and PostgreSQL on Azure Kubernetes Service.",
+    longDescription: "This project demonstrates a production-grade microservices architecture deployed on Azure Kubernetes Service (AKS) with a sophisticated CI/CD pipeline. The voting application consists of 5 independent microservices built with different technology stacks, showcasing polyglot architecture and modern cloud-native practices. The CI/CD pipeline leverages GitHub Actions for automated multi-platform Docker builds (amd64, arm64, arm/v7) with a dual registry strategy pushing to both Docker Hub and Azure Container Registry. Path-based build triggers ensure only modified services are rebuilt, optimizing pipeline efficiency by 70%. The application features real-time results visualization using WebSockets, Redis message queue for inter-service communication, and PostgreSQL for persistent data storage. Kubernetes manifests follow GitOps principles with health checks, volume persistence, and production-ready configurations.",
+    image: "/images/azure.png",
+    technologies: ["Python", "Flask", ".NET Core", "Node.js", "Redis", "PostgreSQL", "Azure AKS", "GitHub Actions", "Docker", "Kubernetes", "WebSockets", "YAML"],
+    features: [
+      "5 microservices architecture with polyglot technology stack (Python, .NET, Node.js)",
+      "Azure Kubernetes Service deployment with production-ready configurations",
+      "GitHub Actions CI/CD with multi-platform Docker builds (amd64, arm64, arm/v7)",
+      "Dual registry strategy pushing to Docker Hub and Azure Container Registry",
+      "Path-based build triggers optimizing CI/CD efficiency by 70%",
+      "Real-time results dashboard using WebSockets for live updates",
+      "Redis message queue for asynchronous inter-service communication",
+      "PostgreSQL database with persistent volume claims for data durability",
+      "Health checks and liveness probes for all microservices",
+      "Infrastructure as Code with Kubernetes YAML manifests following GitOps principles"
+    ],
+    challenges: [
+      "Orchestrating 5 independent microservices with different technology stacks",
+      "Implementing multi-platform Docker builds for ARM and x86 architectures",
+      "Configuring dual registry strategy with proper authentication and secrets management",
+      "Optimizing CI/CD pipeline with path-based triggers to avoid unnecessary builds",
+      "Setting up real-time WebSocket communication between frontend and backend services",
+      "Managing inter-service communication using Redis pub/sub messaging",
+      "Ensuring data persistence with PostgreSQL and Kubernetes persistent volumes",
+      "Implementing proper health checks and graceful shutdown for all services"
+    ],
+    outcomes: [
+      "Deployed production-ready microservices application on Azure AKS",
+      "Reduced deployment time by 90% through automated CI/CD pipeline",
+      "Achieved 70% CI/CD efficiency improvement with path-based build triggers",
+      "Implemented real-time voting results with WebSocket technology",
+      "Built scalable architecture supporting multiple concurrent users",
+      "Mastered multi-platform Docker builds and container registry management",
+      "Gained hands-on experience with Azure cloud services and AKS",
+      "Demonstrated ability to work with polyglot microservices architecture"
+    ],
+    duration: "3 weeks",
+    role: "Cloud DevOps Engineer",
+    status: "Complete",
+    demoLink: "",
+    githubLink: "https://github.com/bashairfan0911/voting-app.git"
   }
 };
 
