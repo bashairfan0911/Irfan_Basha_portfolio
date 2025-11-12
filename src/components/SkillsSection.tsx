@@ -72,7 +72,7 @@ export const SkillsSection = () => {
               <Card key={skill.name} className="card-gradient border-border/50 p-6 group hover:scale-105 transition-all duration-300">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                    <IconComponent className="w-5 h-5 text-primary" />
+                    <IconComponent className="w-6 h-6 text-primary" />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-card-foreground">{skill.name}</h3>

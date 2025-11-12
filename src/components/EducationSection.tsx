@@ -51,10 +51,15 @@ const education = [
 ];
 
 const certifications = [
-  { name: "Python Programming", provider: "Udemy", year: "2024", status: "completed" },
-  { name: "Git & GitHub", provider: "Great Learning ", year: "2024", status: "completed" },
-  { name: "AWS Certified Solutions Architect – Associate", provider: "AWS", year: "2025", status: "completed" },
-  { name: "Google Data Analytics Professional Certificate", provider: "Coursera", year: "2025", status: "Completed" }
+  { name: "Python Programming", provider: "Udemy", year: "2024", status: "completed", url: "" },
+  { name: "Git & GitHub", provider: "Great Learning ", year: "2024", status: "completed", url: "" },
+  { name: "AWS Certified Solutions Architect – Associate", provider: "AWS", year: "2025", status: "completed", url: "https://www.credly.com/badges/8336f37b-d694-499c-812c-06e86db040c7" },
+  { name: "Oracle Cloud Infrastructure DevOps Professional", provider: "Oracle", year: "2025", status: "completed", url: "https://catalog-education.oracle.com/pls/certview/sharebadge?id=C8F2CA3627E56BB3A2A887C1F257481548DA7B2A20CF1E747FB5F2893B3A43BB" },
+  { name: "Oracle Cloud Infrastructure AI Foundations Associate", provider: "Oracle", year: "2025", status: "completed", url: "https://catalog-education.oracle.com/pls/certview/sharebadge?id=3856E0F59B786EAEBCBB0D0FA8AC1FD92B0027CDA96A7AF0EAFE77F1078A479E" },
+  { name: "Oracle Cloud Infrastructure Multicloud Architect Professional", provider: "Oracle", year: "2025", status: "completed", url: "https://catalog-education.oracle.com/pls/certview/sharebadge?id=50E592F48CBB302BE2304939448ED70492FCA5B1855170FDCF2013A26E106BBE" },
+  { name: "Oracle Analytics Cloud", provider: "Oracle", year: "2025", status: "completed", url: "https://catalog-education.oracle.com/pls/certview/sharebadge?id=6109577756FDC4BDD9D3E711C9C2BC946F293D82EEA2F6C93FAF07F8D6508F68" },
+  { name: "MongoDB Node.js Developer Path", provider: "MongoDB", year: "2025", status: "completed", url: "https://learn.mongodb.com/c/4lcMpkcbT2qLXmVqnGyIEw" },
+  { name: "Google Data Analytics Professional Certificate", provider: "Coursera", year: "2025", status: "Completed", url: "https://www.credly.com/badges/dc2deaa4-1d54-40c1-b8e6-5be2badfb151/public_url" }
 ];
 
 export const EducationSection = () => {
@@ -108,16 +113,16 @@ export const EducationSection = () => {
                           
                           <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
                             <div className="flex items-center gap-1">
-                              <Calendar className="w-4 h-4" />
+                              <Calendar className="w-5 h-5" />
                               {edu.duration}
                             </div>
                             <div className="flex items-center gap-1">
-                              <MapPin className="w-4 h-4" />
+                              <MapPin className="w-5 h-5" />
                               {edu.location}
                             </div>
                             {edu.gpa && (
                               <div className="flex items-center gap-1">
-                                <Award className="w-4 h-4" />
+                                <Award className="w-5 h-5" />
                                 GPA: {edu.gpa}
                               </div>
                             )}
@@ -128,7 +133,7 @@ export const EducationSection = () => {
                           <div className="grid md:grid-cols-2 gap-6">
                             <div>
                               <h5 className="font-medium text-card-foreground mb-3 flex items-center gap-2">
-                                <BookOpen className="w-4 h-4" />
+                                <BookOpen className="w-5 h-5" />
                                 Key Coursework
                               </h5>
                               <div className="flex flex-wrap gap-2">
@@ -142,7 +147,7 @@ export const EducationSection = () => {
                             
                             <div>
                               <h5 className="font-medium text-card-foreground mb-3 flex items-center gap-2">
-                                <Award className="w-4 h-4" />
+                                <Award className="w-5 h-5" />
                                 Achievements
                               </h5>
                               <ul className="space-y-1">
@@ -168,30 +173,59 @@ export const EducationSection = () => {
         {/* Certifications */}
         <div className="text-center">
           <h3 className="text-2xl font-bold mb-8 text-gradient">Certifications & Courses</h3>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            {certifications.map((cert, index) => (
-              <Card 
-                key={cert.name}
-                className="card-gradient border-border/50 p-4 text-center hover:scale-105 transition-all duration-300 animate-fade-in"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <div className="mb-2">
-                  <Badge 
-                    variant="outline" 
-                    className={
-                      cert.status === "completed"
-                        ? "border-success/30 text-success"
-                        : "border-warning/30 text-warning"
-                    }
-                  >
-                    {cert.status === "completed" ? "Completed" : "In Progress"}
-                  </Badge>
-                </div>
-                <h4 className="font-medium text-card-foreground mb-1">{cert.name}</h4>
-                <p className="text-sm text-muted-foreground">{cert.provider}</p>
-                <p className="text-xs text-primary mt-1">{cert.year}</p>
-              </Card>
-            ))}
+          <div className="relative max-w-6xl mx-auto">
+            <div className="overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              <div className="flex gap-4 px-4" style={{ width: 'max-content' }}>
+                {certifications.map((cert, index) => {
+                  const CardContent = (
+                    <>
+                      <div className="mb-2">
+                        <Badge 
+                          variant="outline" 
+                          className={
+                            cert.status === "completed"
+                              ? "border-success/30 text-success"
+                              : "border-warning/30 text-warning"
+                          }
+                        >
+                          {cert.status === "completed" ? "Completed" : "In Progress"}
+                        </Badge>
+                      </div>
+                      <h4 className="font-medium text-card-foreground mb-1">{cert.name}</h4>
+                      <p className="text-sm text-muted-foreground">{cert.provider}</p>
+                      <p className="text-xs text-primary mt-1">{cert.year}</p>
+                    </>
+                  );
+
+                  return cert.url ? (
+                    <a
+                      key={cert.name}
+                      href={cert.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block flex-shrink-0"
+                      style={{ width: '280px' }}
+                    >
+                      <Card 
+                        className="card-gradient border-border/50 p-4 text-center hover:scale-105 transition-all duration-300 animate-fade-in cursor-pointer h-full"
+                        style={{ animationDelay: `${index * 100}ms` }}
+                      >
+                        {CardContent}
+                      </Card>
+                    </a>
+                  ) : (
+                    <Card 
+                      key={cert.name}
+                      className="card-gradient border-border/50 p-4 text-center hover:scale-105 transition-all duration-300 animate-fade-in flex-shrink-0"
+                      style={{ animationDelay: `${index * 100}ms`, width: '280px' }}
+                    >
+                      {CardContent}
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground mt-4">← Scroll to see more certifications →</p>
           </div>
         </div>
       </div>

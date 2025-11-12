@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, Github, TrendingUp, Shield, Database, Cloud, Container, Settings, ShoppingCart, Plane, ChevronDown, ShieldCheck } from "lucide-react";
+import { ExternalLink, Github, TrendingUp, Shield, Database, Cloud, Container, Settings, ShoppingCart, Plane, ChevronDown, ShieldCheck, Vote } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -73,6 +73,17 @@ const projects = [
     status: "Complete",
     link: "#",
     image: "/images/wanderlust.png",
+  },
+  {
+    id: 7,
+    title: "Microservices Voting Application with Azure CI/CD Pipeline",
+    description: "Architected cloud-native voting application with 5 microservices using Python (Flask), .NET Core, Node.js, Redis, and PostgreSQL on Azure Kubernetes Service. Built automated CI/CD pipeline using GitHub Actions with multi-platform Docker builds and dual registry strategy.",
+    technologies: ["Python", "Flask", ".NET Core", "Node.js", "Redis", "PostgreSQL", "Azure AKS", "GitHub Actions", "Docker", "Kubernetes", "WebSockets"],
+    metrics: ["5 Microservices", "90% Faster Deploy", "70% CI/CD Efficiency"],
+    icon: Vote,
+    status: "Complete",
+    link: "#",
+    image: "/images/azure.png",
   }
 ];
 
@@ -126,7 +137,7 @@ export const ProjectsSection = () => {
                 <div className="p-8">
                   <div className="flex items-start gap-4 mb-6">
                     <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                      <IconComponent className="w-8 h-8 text-primary" />
+                      <IconComponent className="w-6 h-6 text-primary" />
                     </div>
                     <div className="flex-1">
                       <h3 className="text-xl font-semibold text-card-foreground mb-2">{project.title}</h3>
