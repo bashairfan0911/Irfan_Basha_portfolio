@@ -29,7 +29,7 @@ const projects = [
     image: "/images/retail.png"
   },
   {
-    id: 7,
+    id: 8,
     title: "Microservices Voting Application with Azure CI/CD Pipeline",
     description: "Architected cloud-native voting application with 5 microservices using Python (Flask), .NET Core, Node.js, Redis, and PostgreSQL on Azure Kubernetes Service. Built automated CI/CD pipeline using GitHub Actions with multi-platform Docker builds and dual registry strategy.",
     technologies: ["Python", "Flask", ".NET Core", "Node.js", "Redis", "PostgreSQL", "Azure AKS", "GitHub Actions", "Docker", "Kubernetes", "WebSockets"],
@@ -63,6 +63,17 @@ const projects = [
   },
   {
     id: 6,
+    title: "Azure DevOps End-to-End Project with Terraform",
+    description: "Automated Azure Kubernetes Service (AKS) infrastructure deployment across multiple environments using Terraform and Azure DevOps Pipelines. Implements IaC best practices with remote state management, modular architecture, and automated CI/CD workflows.",
+    technologies: ["Terraform", "Azure DevOps", "AKS", "Azure Key Vault", "Service Principal", "Azure Storage", "YAML Pipelines"],
+    metrics: ["Multi-Environment", "IaC Automation", "GitOps"],
+    icon: Cloud,
+    status: "Complete",
+    link: "#",
+    image: "/images/azure-terraform.png",
+  },
+  {
+    id: 7,
     title: "DevSecOps Pipeline - Wanderlust",
     description: "End-to-end DevSecOps implementation with Jenkins CI/CD, OWASP dependency scanning, SonarQube code quality analysis, Trivy security scanning, and GitOps deployment using ArgoCD on AWS EKS with Prometheus & Grafana monitoring.",
     technologies: ["Jenkins", "ArgoCD", "SonarQube", "Trivy", "OWASP", "AWS EKS", "Helm", "Prometheus", "Grafana"],
