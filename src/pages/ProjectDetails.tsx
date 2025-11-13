@@ -204,6 +204,50 @@ const projectsData = {
     githubLink: "https://github.com/bashairfan0911/wanderlust.git"
   },
   6: {
+    title: "Azure DevOps End-to-End Project with Terraform",
+    description: "Automated Azure Kubernetes Service (AKS) infrastructure deployment across multiple environments using Terraform and Azure DevOps Pipelines.",
+    longDescription: "This project automates the deployment of Azure Kubernetes Service (AKS) clusters across multiple environments (dev, staging, prod) using Terraform and Azure DevOps Pipelines. It implements infrastructure as code (IaC) best practices with remote state management, modular architecture, and automated CI/CD workflows. The solution includes automated Azure Service Principal creation, secure Key Vault integration for secrets management, and complete CI/CD pipelines for both infrastructure deployment and destruction. The modular Terraform architecture ensures reusability across environments while maintaining complete isolation between dev, staging, and production workloads.",
+    image: "/images/azure-terraform.png",
+    technologies: ["Terraform", "Azure DevOps", "AKS", "Azure Key Vault", "Service Principal", "Azure Storage", "YAML Pipelines", "Azure CNI", "RBAC"],
+    features: [
+      "Multi-environment AKS cluster provisioning (dev/staging/prod) with complete isolation",
+      "Automated Azure Service Principal creation and management with Contributor role",
+      "Secure Key Vault integration for secrets management with RBAC-based access",
+      "Remote state management using Azure Storage with state locking",
+      "CI/CD pipelines for infrastructure deployment and destruction with approval gates",
+      "Modular Terraform architecture with reusable modules (AKS, Key Vault, Service Principal)",
+      "Auto-scaling node pools (1-3 nodes) with Standard_DS2_v2 VMs across 3 availability zones",
+      "Azure CNI networking with Standard Load Balancer integration",
+      "Automated kubeconfig generation for cluster access",
+      "Branch-based deployment strategy with feature branches and pull requests"
+    ],
+    challenges: [
+      "Designing modular Terraform architecture for multi-environment deployments",
+      "Implementing secure state management with Azure Storage backend and locking",
+      "Configuring Azure Service Principal with proper RBAC permissions",
+      "Managing secrets securely across environments using Key Vault",
+      "Building automated pipelines with validation, planning, and approval stages",
+      "Ensuring environment isolation while maintaining code reusability",
+      "Implementing safe destruction workflows with manual approval gates",
+      "Coordinating Terraform state across multiple environments"
+    ],
+    outcomes: [
+      "Successfully deployed automated multi-environment AKS infrastructure",
+      "Achieved complete environment isolation with dedicated resource groups and state files",
+      "Implemented secure secrets management with Azure Key Vault integration",
+      "Built production-ready CI/CD pipelines with validation and approval workflows",
+      "Reduced infrastructure provisioning time by approximately 80% through automation",
+      "Enabled consistent and repeatable deployments across all environments",
+      "Gained hands-on experience with Terraform modules and Azure DevOps Pipelines",
+      "Demonstrated IaC best practices with remote state and modular architecture"
+    ],
+    duration: "3 weeks",
+    role: "DevOps Engineer",
+    status: "Complete",
+    demoLink: "",
+    githubLink: "https://github.com/bashairfan0911/Azure-DevOps-End-to-End-Project-with-Terraform.git"
+  },
+  7: {
     title: "DevSecOps Pipeline - Wanderlust",
     description: "End-to-end DevSecOps implementation with Jenkins CI/CD, OWASP dependency scanning, SonarQube code quality analysis, Trivy security scanning, and GitOps deployment using ArgoCD on AWS EKS.",
     longDescription: "This project demonstrates a complete DevSecOps pipeline implementation for the Wanderlust travel blog application. Built on AWS EKS with a focus on security, automation, and GitOps principles, the pipeline integrates multiple security scanning tools at different stages. Jenkins orchestrates the CI process with OWASP dependency checks, SonarQube code quality analysis, and Trivy container security scanning. ArgoCD handles continuous deployment using GitOps methodology, automatically syncing Kubernetes manifests from Git. The infrastructure includes comprehensive monitoring with Prometheus and Grafana, providing real-time insights into application performance and cluster health. This project showcases industry-standard DevSecOps practices with automated security gates, quality checks, and zero-downtime deployments.",
@@ -247,7 +291,7 @@ const projectsData = {
     demoLink: "",
     githubLink: "https://github.com/bashairfan0911/wanderlust.git"
   },
-  7: {
+  8: {
     title: "Microservices Voting Application with Azure CI/CD Pipeline",
     description: "Architected cloud-native voting application with 5 microservices using Python (Flask), .NET Core, Node.js, Redis, and PostgreSQL on Azure Kubernetes Service.",
     longDescription: "This project demonstrates a production-grade microservices architecture deployed on Azure Kubernetes Service (AKS) with a sophisticated CI/CD pipeline. The voting application consists of 5 independent microservices built with different technology stacks, showcasing polyglot architecture and modern cloud-native practices. The CI/CD pipeline leverages GitHub Actions for automated multi-platform Docker builds (amd64, arm64, arm/v7) with a dual registry strategy pushing to both Docker Hub and Azure Container Registry. Path-based build triggers ensure only modified services are rebuilt, optimizing pipeline efficiency by 70%. The application features real-time results visualization using WebSockets, Redis message queue for inter-service communication, and PostgreSQL for persistent data storage. Kubernetes manifests follow GitOps principles with health checks, volume persistence, and production-ready configurations.",

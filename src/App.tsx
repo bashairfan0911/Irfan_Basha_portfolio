@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import { ProjectDetails } from "./pages/ProjectDetails";
 import CV from "./pages/CV";
 import NotFound from "./pages/NotFound";
+import { ScrollToTop } from "./components/ScrollToTop";
 
 // Redirect component for external interview notes
 const InterviewNotesRedirect = () => {
@@ -28,6 +29,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/cv" element={<CV />} />
