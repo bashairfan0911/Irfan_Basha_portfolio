@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, FileText, FolderGit2 } from "lucide-react";
+import { ChevronDown, FileText, FolderGit2, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export const HeroSection = () => {
@@ -106,6 +106,17 @@ export const HeroSection = () => {
             >
               <FolderGit2 className="mr-2 h-5 w-5 animate-pulse" />
               View Projects
+            </Button>
+
+            <Button 
+              size="lg" 
+              asChild
+              className="bg-accent hover:bg-accent/90 text-accent-foreground glow-effect transition-all duration-500 hover:scale-110 hover:-rotate-1 transform"
+            >
+              <Link to="/blog">
+                <BookOpen className="mr-2 h-5 w-5 animate-bounce" />
+                Read Blog
+              </Link>
             </Button>
           </div>
         </div>
