@@ -4,23 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Search, ArrowRight, Plus, Trash2, ArrowLeft } from "lucide-react";
+import { Search, ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
 import { useBlog } from "@/context/BlogContext";
 
 export default function Blog() {
-  const { posts, deletePost } = useBlog();
+  const { posts, loading, error } = useBlog();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
   const filteredPosts = posts.filter((post) => {
     const matchesSearch =
@@ -30,45 +20,50 @@ export default function Blog() {
     return matchesSearch && matchesCategory;
   });
 
-  const categories = Array.from(new Set(posts.map((post) => post.category)));
+  const categories = Array.from(new Set(posts.map((post) => post.category).filter(Boolean)));
 
-  const handleDeleteClick = (postId: string) => {
-    setDeleteConfirm(postId);
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background to-background/80 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+          <p className="text-muted-foreground">Loading posts...</p>
+        </div>
+      </div>
+    );
+  }
 
-  const handleConfirmDelete = () => {
-    if (deleteConfirm) {
-      deletePost(deleteConfirm);
-      setDeleteConfirm(null);
-    }
-  };
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background to-background/80 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-destructive mb-4">{error}</p>
+          <Link to="/">
+            <Button>Go Home</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
       {/* Header */}
       <div className="border-b border-border/50 bg-card">
         <div className="max-w-6xl mx-auto px-4 py-12">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link to="/">
-                <Button variant="ghost" className="gap-2">
-                  <ArrowLeft className="h-4 w-4" />
-                  Home
-                </Button>
-              </Link>
-              <div>
-                <h1 className="text-4xl font-bold mb-2 text-gradient">Blog</h1>
-                <p className="text-lg text-muted-foreground">
-                  Insights on DevOps, Cloud Infrastructure, and Modern Development
-                </p>
-              </div>
-            </div>
-            <Link to="/blog/new">
-              <Button className="gap-2">
-                <Plus className="h-4 w-4" />
-                New Post
+          <div className="flex items-center gap-4">
+            <Link to="/">
+              <Button variant="ghost" className="gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Home
               </Button>
             </Link>
+            <div>
+              <h1 className="text-4xl font-bold mb-2 text-gradient">Blog</h1>
+              <p className="text-lg text-muted-foreground">
+                Insights on DevOps, Cloud Infrastructure, and Modern Development
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -88,25 +83,27 @@ export default function Blog() {
           </div>
 
           {/* Category Filter */}
-          <div className="flex flex-wrap gap-2">
-            <Button
-              variant={selectedCategory === null ? "default" : "outline"}
-              onClick={() => setSelectedCategory(null)}
-              size="sm"
-            >
-              All
-            </Button>
-            {categories.map((category) => (
+          {categories.length > 0 && (
+            <div className="flex flex-wrap gap-2">
               <Button
-                key={category}
-                variant={selectedCategory === category ? "default" : "outline"}
-                onClick={() => setSelectedCategory(category)}
+                variant={selectedCategory === null ? "default" : "outline"}
+                onClick={() => setSelectedCategory(null)}
                 size="sm"
               >
-                {category}
+                All
               </Button>
-            ))}
-          </div>
+              {categories.map((category) => (
+                <Button
+                  key={category}
+                  variant={selectedCategory === category ? "default" : "outline"}
+                  onClick={() => setSelectedCategory(category)}
+                  size="sm"
+                >
+                  {category}
+                </Button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -133,24 +130,12 @@ export default function Blog() {
                   )}
                 </div>
                 <CardHeader className="flex-1">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1">
-                      <Link to={`/blog/${post.id}`}>
-                        <CardTitle className="hover:text-primary transition-colors cursor-pointer text-lg line-clamp-2">
-                          {post.title}
-                        </CardTitle>
-                      </Link>
-                      <CardDescription className="mt-2 line-clamp-2">{post.excerpt}</CardDescription>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteClick(post.id)}
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  <Link to={`/blog/${post.id}`}>
+                    <CardTitle className="hover:text-primary transition-colors cursor-pointer text-lg line-clamp-2">
+                      {post.title}
+                    </CardTitle>
+                  </Link>
+                  <CardDescription className="mt-2 line-clamp-2">{post.excerpt}</CardDescription>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="flex flex-wrap gap-2 mb-4">
@@ -176,28 +161,10 @@ export default function Blog() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">No posts found matching your criteria.</p>
+            <p className="text-muted-foreground">No posts found.</p>
           </div>
         )}
       </div>
-
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={deleteConfirm !== null} onOpenChange={(open) => !open && setDeleteConfirm(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Post</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this post? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="flex gap-4 justify-end">
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive hover:bg-destructive/90">
-              Delete
-            </AlertDialogAction>
-          </div>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }
