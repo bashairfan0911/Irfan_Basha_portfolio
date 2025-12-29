@@ -1,4 +1,4 @@
-import { MongoClient } from "mongodb";
+const { MongoClient } = require("mongodb");
 
 const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DATABASE || "portfolio";
@@ -16,7 +16,7 @@ async function connectToDatabase() {
   return client;
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Enable CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
@@ -46,6 +46,6 @@ export default async function handler(req, res) {
     return res.status(200).json({ posts: transformedPosts });
   } catch (error) {
     console.error("Database error:", error);
-    return res.status(500).json({ error: "Failed to fetch posts" });
+    return res.status(500).json({ error: "Failed to fetch posts", details: error.message });
   }
-}
+};
