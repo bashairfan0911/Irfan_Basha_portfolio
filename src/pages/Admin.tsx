@@ -13,7 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, Plus, Trash2, Edit, Save, X, Lock } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Edit, Save, X, Lock, ImagePlus } from "lucide-react";
 import { toast } from "sonner";
 
 interface BlogPost {
@@ -27,6 +27,7 @@ interface BlogPost {
   tags: string[];
   readTime: number;
   featuredImage?: string;
+  images?: string[];
 }
 
 const ADMIN_API = "/api/admin/posts.mjs";
@@ -40,6 +41,7 @@ export default function Admin() {
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [newImageUrl, setNewImageUrl] = useState("");
 
   const [formData, setFormData] = useState({
     title: "",
@@ -51,6 +53,7 @@ export default function Admin() {
     tags: "",
     readTime: 5,
     featuredImage: "",
+    images: [] as string[],
   });
 
   const storedPassword = localStorage.getItem("admin_password");
@@ -103,6 +106,28 @@ export default function Admin() {
       tags: "",
       readTime: 5,
       featuredImage: "",
+      images: [],
+    });
+    setNewImageUrl("");
+  };
+
+  const addImage = () => {
+    if (newImageUrl && newImageUrl.startsWith("http")) {
+      setFormData({
+        ...formData,
+        images: [...formData.images, newImageUrl],
+      });
+      setNewImageUrl("");
+      toast.success("Image added");
+    } else {
+      toast.error("Please enter a valid image URL");
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setFormData({
+      ...formData,
+      images: formData.images.filter((_, i) => i !== index),
     });
   };
 
@@ -206,6 +231,7 @@ export default function Admin() {
       tags: post.tags.join(", "),
       readTime: post.readTime,
       featuredImage: post.featuredImage || "",
+      images: post.images || [],
     });
     setIsCreating(false);
   };
@@ -370,6 +396,60 @@ export default function Admin() {
                   onChange={(e) => setFormData({ ...formData, featuredImage: e.target.value })}
                   placeholder="https://example.com/image.jpg"
                 />
+                {formData.featuredImage && (
+                  <img
+                    src={formData.featuredImage}
+                    alt="Featured preview"
+                    className="mt-2 h-32 object-cover rounded-lg"
+                    onError={(e) => (e.currentTarget.style.display = "none")}
+                  />
+                )}
+              </div>
+
+              {/* Multiple Images Section */}
+              <div>
+                <label className="text-sm font-medium">Additional Images</label>
+                <div className="flex gap-2 mt-2">
+                  <Input
+                    value={newImageUrl}
+                    onChange={(e) => setNewImageUrl(e.target.value)}
+                    placeholder="https://example.com/image.jpg"
+                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addImage())}
+                  />
+                  <Button type="button" onClick={addImage} className="gap-2">
+                    <ImagePlus className="h-4 w-4" />
+                    Add
+                  </Button>
+                </div>
+                
+                {/* Image Gallery */}
+                {formData.images.length > 0 && (
+                  <div className="grid grid-cols-4 gap-4 mt-4">
+                    {formData.images.map((img, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={img}
+                          alt={`Image ${index + 1}`}
+                          className="w-full h-24 object-cover rounded-lg border"
+                          onError={(e) => (e.currentTarget.src = "/placeholder.svg")}
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => removeImage(index)}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                        <p className="text-xs text-muted-foreground mt-1 truncate">{img}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p className="text-xs text-muted-foreground mt-2">
+                  Add multiple image URLs. These will be displayed in your blog post.
+                </p>
               </div>
 
               <div className="flex gap-2 pt-4">
@@ -403,11 +483,20 @@ export default function Admin() {
                     key={post._id}
                     className="flex items-center justify-between p-4 border rounded-lg"
                   >
-                    <div>
-                      <h3 className="font-medium">{post.title}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {post.category} • {post.date}
-                      </p>
+                    <div className="flex items-center gap-4">
+                      {post.featuredImage && (
+                        <img
+                          src={post.featuredImage}
+                          alt={post.title}
+                          className="w-16 h-16 object-cover rounded"
+                        />
+                      )}
+                      <div>
+                        <h3 className="font-medium">{post.title}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          {post.category} • {post.date} • {post.images?.length || 0} images
+                        </p>
+                      </div>
                     </div>
                     <div className="flex gap-2">
                       <Button variant="outline" size="sm" onClick={() => startEdit(post)}>
