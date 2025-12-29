@@ -8,6 +8,7 @@ import { ProjectDetails } from "./pages/ProjectDetails";
 import CV from "./pages/CV";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { BlogProvider } from "./context/BlogContext";
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="/cv" element={<CV />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:id" element={<BlogPost />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="/project/:id" element={<ProjectDetails />} />
             <Route path="/interview-notes" element={<InterviewNotesRedirect />} />
             <Route path="/notes" element={<GoogleDocsRedirect />} />
