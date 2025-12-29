@@ -1,18 +1,29 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Calendar, User, Clock } from "lucide-react";
+import { ArrowLeft, Calendar, User, Clock, Loader2 } from "lucide-react";
 import { useBlog } from "@/context/BlogContext";
 
 export default function BlogPost() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getPost } = useBlog();
+  const { getPost, loading } = useBlog();
   const post = id ? getPost(id) : undefined;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background to-background/80 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+          <p className="text-muted-foreground">Loading post...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+      <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
         <div className="max-w-4xl mx-auto px-4 py-12">
           <Button variant="ghost" onClick={() => navigate("/blog")} className="gap-2 mb-8">
             <ArrowLeft className="h-4 w-4" />
@@ -84,7 +95,9 @@ export default function BlogPost() {
                 <Clock className="h-4 w-4" />
                 <span>{post.readTime} min read</span>
               </div>
-              <Badge className="bg-accent text-accent-foreground">{post.category}</Badge>
+              {post.category && (
+                <Badge className="bg-accent text-accent-foreground">{post.category}</Badge>
+              )}
             </div>
 
             {/* Content */}
@@ -97,13 +110,15 @@ export default function BlogPost() {
             </div>
 
             {/* Tags */}
-            <div className="flex flex-wrap gap-2 pt-8 border-t border-border/50">
-              {post.tags.map((tag) => (
-                <Badge key={tag} variant="secondary">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
+            {post.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 pt-8 border-t border-border/50">
+                {post.tags.map((tag) => (
+                  <Badge key={tag} variant="secondary">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
           </div>
         </article>
 
