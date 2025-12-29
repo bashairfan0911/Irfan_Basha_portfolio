@@ -5,15 +5,28 @@ const dbName = process.env.MONGODB_DATABASE || "portfolio";
 const collectionName = process.env.MONGODB_COLLECTION || "blogPosts";
 
 let cachedClient = null;
+let cachedDb = null;
 
 async function connectToDatabase() {
-  if (cachedClient) {
-    return cachedClient;
+  if (cachedClient && cachedDb) {
+    return { client: cachedClient, db: cachedDb };
   }
-  const client = new MongoClient(uri);
+
+  if (!uri) {
+    throw new Error("MONGODB_URI environment variable is not set");
+  }
+
+  const client = new MongoClient(uri, {
+    maxPoolSize: 10,
+  });
+
   await client.connect();
+  const db = client.db(dbName);
+
   cachedClient = client;
-  return client;
+  cachedDb = db;
+
+  return { client, db };
 }
 
 module.exports = async function handler(req, res) {
@@ -31,13 +44,11 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const client = await connectToDatabase();
-    const db = client.db(dbName);
+    const { db } = await connectToDatabase();
     const collection = db.collection(collectionName);
 
     const posts = await collection.find({}).sort({ date: -1 }).toArray();
 
-    // Transform _id to string
     const transformedPosts = posts.map((post) => ({
       ...post,
       _id: post._id.toString(),
@@ -45,7 +56,10 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({ posts: transformedPosts });
   } catch (error) {
-    console.error("Database error:", error);
-    return res.status(500).json({ error: "Failed to fetch posts", details: error.message });
+    console.error("Database error:", error.message);
+    return res.status(500).json({ 
+      error: "Failed to fetch posts", 
+      message: error.message 
+    });
   }
 };
