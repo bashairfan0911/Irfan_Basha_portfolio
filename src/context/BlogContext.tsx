@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-const API_URL = import.meta.env.PROD ? "/api/posts" : "http://localhost:3000/api/posts";
+const API_URL = "/api/posts";
 
 export interface BlogPost {
   id: string;
