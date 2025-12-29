@@ -109,6 +109,31 @@ export default function BlogPost() {
               />
             </div>
 
+            {/* Image Gallery */}
+            {post.images && post.images.length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold mb-4">Images</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {post.images.map((img, index) => (
+                    <a
+                      key={index}
+                      href={img}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block overflow-hidden rounded-lg border border-border/50 hover:border-primary transition-colors"
+                    >
+                      <img
+                        src={img}
+                        alt={`${post.title} - Image ${index + 1}`}
+                        className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
+                        onError={(e) => (e.currentTarget.src = "/placeholder.svg")}
+                      />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Tags */}
             {post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 pt-8 border-t border-border/50">

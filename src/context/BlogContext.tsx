@@ -13,6 +13,7 @@ export interface BlogPost {
   tags: string[];
   readTime: number;
   featuredImage?: string;
+  images?: string[];
 }
 
 interface MongoPost {
@@ -26,6 +27,7 @@ interface MongoPost {
   tags: string[];
   readTime: number;
   featuredImage?: string;
+  images?: string[];
 }
 
 interface BlogContextType {
@@ -50,6 +52,7 @@ const transformMongoPost = (post: MongoPost): BlogPost => {
     tags: post.tags || [],
     readTime: post.readTime || 5,
     featuredImage: post.featuredImage || undefined,
+    images: post.images || [],
   };
 };
 
