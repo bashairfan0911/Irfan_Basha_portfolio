@@ -1,6 +1,6 @@
-const { MongoClient } = require("mongodb");
+import { MongoClient } from "mongodb";
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   // Enable CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
@@ -18,7 +18,6 @@ module.exports = async function handler(req, res) {
   const dbName = process.env.MONGODB_DATABASE || "portfolio";
   const collectionName = process.env.MONGODB_COLLECTION || "blogPosts";
 
-  // Debug: Check if env vars exist
   if (!uri) {
     return res.status(500).json({ 
       error: "Configuration error", 
@@ -47,12 +46,11 @@ module.exports = async function handler(req, res) {
     console.error("MongoDB Error:", error);
     return res.status(500).json({ 
       error: "Database error", 
-      message: error.message,
-      name: error.name
+      message: error.message
     });
   } finally {
     if (client) {
       await client.close();
     }
   }
-};
+}
