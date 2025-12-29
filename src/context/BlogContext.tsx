@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-const API_URL = "/api/posts";
+const API_URL = "/api/posts.mjs";
 
 export interface BlogPost {
   id: string;
