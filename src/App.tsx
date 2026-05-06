@@ -10,6 +10,11 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import InterviewPrep from "./pages/InterviewPrep";
+import LinuxQuestions from "./pages/LinuxQuestions";
+import NetworkingQuestions from "./pages/NetworkingQuestions";
+import BehavioralQuestions from "./pages/BehavioralQuestions";
+import ToolDetail from "./pages/ToolDetail";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { BlogProvider } from "./context/BlogContext";
 
@@ -42,6 +47,11 @@ const App = () => (
             <Route path="/blog/:id" element={<BlogPost />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/project/:id" element={<ProjectDetails />} />
+            <Route path="/interview-prep" element={<InterviewPrep />} />
+            <Route path="/interview-prep/linux" element={<LinuxQuestions />} />
+            <Route path="/interview-prep/networking" element={<NetworkingQuestions />} />
+            <Route path="/interview-prep/behavioral" element={<BehavioralQuestions />} />
+            <Route path="/interview-prep/tool/:toolSlug" element={<ToolDetail />} />
             <Route path="/interview-notes" element={<InterviewNotesRedirect />} />
             <Route path="/notes" element={<GoogleDocsRedirect />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

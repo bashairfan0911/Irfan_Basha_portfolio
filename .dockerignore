@@ -1,0 +1,13 @@
+node_modules
+dist
+.git
+.github
+.vscode
+Dockerfile
+.dockerignore
+.gitignore
+package-lock.json
+*.log
+README.md
+kind/
+api/
