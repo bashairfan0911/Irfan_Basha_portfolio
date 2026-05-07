@@ -2,32 +2,37 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 
 const API_URL = "/api/posts.mjs";
 
+// A content block is either a text (HTML) block or an image block
+export type ContentBlock =
+  | { type: "text"; value: string }
+  | { type: "image"; url: string; caption?: string; naturalWidth?: number; naturalHeight?: number };
+
 export interface BlogPost {
   id: string;
   title: string;
   excerpt: string;
+  /** JSON-stringified ContentBlock[] */
   content: string;
-  date: string;
   author: string;
   category: string;
   tags: string[];
   readTime: number;
   featuredImage?: string;
-  images?: string[];
+  createdAt: string;
 }
 
+// Raw shape returned from MongoDB
 interface MongoPost {
   _id: string;
   title: string;
   excerpt: string;
   content: string;
-  date: string;
   author: string;
   category: string;
   tags: string[];
   readTime: number;
   featuredImage?: string;
-  images?: string[];
+  createdAt: string;
 }
 
 interface BlogContextType {
@@ -40,42 +45,48 @@ interface BlogContextType {
 
 const BlogContext = createContext<BlogContextType | undefined>(undefined);
 
-const transformMongoPost = (post: MongoPost): BlogPost => {
+function transformPost(p: MongoPost): BlogPost {
   return {
-    id: post._id,
-    title: post.title || "",
-    excerpt: post.excerpt || "",
-    content: post.content || "",
-    date: post.date || "",
-    author: post.author || "",
-    category: post.category || "",
-    tags: post.tags || [],
-    readTime: post.readTime || 5,
-    featuredImage: post.featuredImage || undefined,
-    images: post.images || [],
+    id: p._id,
+    title: p.title || "",
+    excerpt: p.excerpt || "",
+    content: p.content || "",
+    author: p.author || "",
+    category: p.category || "",
+    tags: p.tags || [],
+    readTime: p.readTime || 5,
+    featuredImage: p.featuredImage || undefined,
+    createdAt: p.createdAt || p._id, // fallback
   };
-};
+}
+
+/** Parse content string into blocks (supports legacy plain-HTML strings too) */
+export function parseContent(content: string): ContentBlock[] {
+  if (!content) return [{ type: "text", value: "" }];
+  try {
+    const parsed = JSON.parse(content);
+    if (Array.isArray(parsed)) return parsed as ContentBlock[];
+  } catch {
+    // legacy: raw HTML string → treat as single text block
+  }
+  return [{ type: "text", value: content }];
+}
 
 export const BlogProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchPosts = async () => {
+  const refreshPosts = async () => {
     try {
       setLoading(true);
       setError(null);
-
-      const response = await fetch(API_URL);
-      if (!response.ok) {
-        throw new Error("Failed to fetch posts");
-      }
-
-      const data = await response.json();
-      const transformedPosts = (data.posts || []).map(transformMongoPost);
-      setPosts(transformedPosts);
+      const res = await fetch(API_URL);
+      if (!res.ok) throw new Error(`Failed to load posts (${res.status})`);
+      const data = await res.json();
+      setPosts((data.posts || []).map(transformPost));
     } catch (err) {
-      console.error("Error fetching posts:", err);
+      console.error("BlogContext fetch error:", err);
       setError(err instanceof Error ? err.message : "Failed to load posts");
     } finally {
       setLoading(false);
@@ -83,16 +94,10 @@ export const BlogProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    fetchPosts();
+    refreshPosts();
   }, []);
 
-  const refreshPosts = async () => {
-    await fetchPosts();
-  };
-
-  const getPost = (id: string) => {
-    return posts.find((post) => post.id === id);
-  };
+  const getPost = (id: string) => posts.find((p) => p.id === id);
 
   return (
     <BlogContext.Provider value={{ posts, loading, error, refreshPosts, getPost }}>
@@ -103,8 +108,6 @@ export const BlogProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export const useBlog = () => {
   const context = useContext(BlogContext);
-  if (!context) {
-    throw new Error("useBlog must be used within a BlogProvider");
-  }
+  if (!context) throw new Error("useBlog must be used within a BlogProvider");
   return context;
 };

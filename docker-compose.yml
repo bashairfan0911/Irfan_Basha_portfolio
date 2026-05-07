@@ -1,0 +1,69 @@
+# docker-compose.yml
+# Use: docker compose up --build
+# For local development with a local MongoDB instead of Atlas.
+# For production, set MONGODB_URI to your Atlas connection string.
+
+services:
+
+  # ── Portfolio App ────────────────────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner           # build only up to the final stage
+    image: irfan-portfolio:latest
+    container_name: portfolio-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV:           production
+      PORT:               3000
+      # ── Option A: Use local MongoDB container (default) ──────────────────
+      MONGODB_URI:        mongodb://mongo:27017/
+      MONGODB_DATABASE:   portfolio
+      MONGODB_COLLECTION: blogPosts
+      # ── Option B: Use MongoDB Atlas (comment out the mongo service below) ─
+      # MONGODB_URI: mongodb+srv://user:password@cluster0.xxxxx.mongodb.net/
+      ADMIN_PASSWORD:     ${ADMIN_PASSWORD:-Irfan@2024}
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - portfolio-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/"]
+      interval: 30s
+      timeout:  5s
+      retries:  3
+      start_period: 15s
+
+  # ── MongoDB (local only) ─────────────────────────────────────────────────────
+  mongo:
+    image: mongo:7-jammy
+    container_name: portfolio-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"           # expose for local inspection (remove in prod)
+    volumes:
+      - mongo-data:/data/db     # persist data across restarts
+    environment:
+      MONGO_INITDB_DATABASE: portfolio
+    networks:
+      - portfolio-net
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout:  5s
+      retries:  5
+      start_period: 20s
+
+# ── Named volumes ─────────────────────────────────────────────────────────────
+volumes:
+  mongo-data:
+    driver: local
+
+# ── Networks ──────────────────────────────────────────────────────────────────
+networks:
+  portfolio-net:
+    driver: bridge

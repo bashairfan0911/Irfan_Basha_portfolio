@@ -1,13 +1,59 @@
-node_modules
-dist
+# ── Version control ───────────────────────────────────────────────────────────
 .git
-.github
-.vscode
-Dockerfile
-.dockerignore
 .gitignore
-package-lock.json
+.gitattributes
+
+# ── Node modules (rebuilt inside Docker) ─────────────────────────────────────
+node_modules
+
+# ── Dev / local config ────────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Vite build output (built inside Docker) ───────────────────────────────────
+dist
+
+# ── Editor & IDE ─────────────────────────────────────────────────────────────
+.vscode
+.idea
+*.swp
+*.swo
+
+# ── OS generated files ────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── TypeScript build info ─────────────────────────────────────────────────────
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── Tests & coverage ─────────────────────────────────────────────────────────
+coverage
+*.test.*
+*.spec.*
+__tests__
+
+# ── CI / CD ───────────────────────────────────────────────────────────────────
+.github
+.amazonq
+
+# ── Docker files (no recursion) ───────────────────────────────────────────────
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# ── Kubernetes / infra ────────────────────────────────────────────────────────
+kind
+
+# ── Misc ──────────────────────────────────────────────────────────────────────
+*.md
+bun.lockb
 README.md
-kind/
-api/

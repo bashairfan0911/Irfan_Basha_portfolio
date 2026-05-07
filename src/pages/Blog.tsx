@@ -146,7 +146,7 @@ export default function Blog() {
                     ))}
                   </div>
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <span>{post.date}</span>
+                    <span>{new Date(post.createdAt).toLocaleDateString()}</span>
                     <span>{post.readTime} min read</span>
                   </div>
                   <Link to={`/blog/${post.id}`} className="mt-4 block">

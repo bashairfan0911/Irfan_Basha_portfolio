@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,233 +13,140 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, Plus, Trash2, Edit, Save, X, Lock, ImagePlus } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Edit, Save, X, Upload, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-
-interface BlogPost {
-  _id: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  date: string;
-  author: string;
-  category: string;
-  tags: string[];
-  readTime: number;
-  featuredImage?: string;
-  images?: string[];
-}
+import { ContentBlock, parseContent, BlogPost } from "@/context/BlogContext";
+import { useBlog } from "@/context/BlogContext";
+import BlockEditor from "@/components/BlockEditor";
 
 const ADMIN_API = "/api/admin/posts.mjs";
-const PUBLIC_API = "/api/posts.mjs";
+
+const defaultBlocks: ContentBlock[] = [{ type: "text", value: "" }];
+
+const emptyForm = {
+  title: "",
+  excerpt: "",
+  author: "Irfan Basha",
+  category: "",
+  tags: "",
+  readTime: 5,
+  featuredImage: "",
+};
 
 export default function Admin() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [password, setPassword] = useState("");
-  const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { posts, loading: postsLoading, refreshPosts } = useBlog();
+  const password = sessionStorage.getItem("admin_auth_pw") || "";
+
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-  const [newImageUrl, setNewImageUrl] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState(emptyForm);
+  const [blocks, setBlocks] = useState<ContentBlock[]>(defaultBlocks);
+  const coverFileRef = useRef<HTMLInputElement | null>(null);
 
-  const [formData, setFormData] = useState({
-    title: "",
-    excerpt: "",
-    content: "",
-    date: new Date().toISOString().split("T")[0],
-    author: "Irfan Basha",
-    category: "",
-    tags: "",
-    readTime: 5,
-    featuredImage: "",
-    images: [] as string[],
-  });
-
-  const storedPassword = localStorage.getItem("admin_password");
-
+  // Sync password into sessionStorage so BlogAuthGate and Admin share it
   useEffect(() => {
-    if (storedPassword) {
-      setPassword(storedPassword);
-      setIsAuthenticated(true);
-      fetchPosts(storedPassword);
-    }
+    // password is already verified by BlogAuthGate; just read it
   }, []);
 
-  const fetchPosts = async (pwd: string) => {
-    try {
-      setLoading(true);
-      const response = await fetch(PUBLIC_API);
-      const data = await response.json();
-      setPosts(data.posts || []);
-    } catch (error) {
-      toast.error("Failed to fetch posts");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleLogin = () => {
-    if (password) {
-      localStorage.setItem("admin_password", password);
-      setIsAuthenticated(true);
-      fetchPosts(password);
-      toast.success("Logged in successfully");
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("admin_password");
-    setIsAuthenticated(false);
-    setPassword("");
-    setPosts([]);
+  const handleCoverUpload = (file: File) => {
+    if (!file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = () => setFormData((f) => ({ ...f, featuredImage: reader.result as string }));
+    reader.readAsDataURL(file);
   };
 
   const resetForm = () => {
-    setFormData({
-      title: "",
-      excerpt: "",
-      content: "",
-      date: new Date().toISOString().split("T")[0],
-      author: "Irfan Basha",
-      category: "",
-      tags: "",
-      readTime: 5,
-      featuredImage: "",
-      images: [],
-    });
-    setNewImageUrl("");
+    setFormData(emptyForm);
+    setBlocks(defaultBlocks);
   };
 
-  const addImage = () => {
-    if (newImageUrl && newImageUrl.startsWith("http")) {
-      setFormData({
-        ...formData,
-        images: [...formData.images, newImageUrl],
-      });
-      setNewImageUrl("");
-      toast.success("Image added");
-    } else {
-      toast.error("Please enter a valid image URL");
-    }
-  };
+  const apiHeaders = () => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${password}`,
+  });
 
-  const removeImage = (index: number) => {
-    setFormData({
-      ...formData,
-      images: formData.images.filter((_, i) => i !== index),
-    });
-  };
-
-  const handleCreate = async () => {
-    if (!formData.title || !formData.excerpt || !formData.content) {
-      toast.error("Please fill required fields");
+  const handleSave = async () => {
+    if (!formData.title.trim() || !formData.excerpt.trim()) {
+      toast.error("Title and Excerpt are required");
       return;
     }
 
-    try {
-      const response = await fetch(ADMIN_API, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${password}`,
-        },
-        body: JSON.stringify({
-          ...formData,
-          tags: formData.tags.split(",").map((t) => t.trim()).filter(Boolean),
-        }),
-      });
+    const payload = {
+      ...formData,
+      tags: formData.tags.split(",").map((t) => t.trim()).filter(Boolean),
+      content: JSON.stringify(blocks),
+      createdAt: editingPost?.createdAt || new Date().toISOString(),
+    };
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to create post");
+    try {
+      setSaving(true);
+      let res: Response;
+
+      if (editingPost) {
+        res = await fetch(ADMIN_API, {
+          method: "PUT",
+          headers: apiHeaders(),
+          body: JSON.stringify({ id: editingPost.id, ...payload }),
+        });
+      } else {
+        res = await fetch(ADMIN_API, {
+          method: "POST",
+          headers: apiHeaders(),
+          body: JSON.stringify(payload),
+        });
       }
 
-      toast.success("Post created successfully");
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: res.statusText }));
+        throw new Error(err.error || "Failed to save");
+      }
+
+      toast.success(editingPost ? "Post updated!" : "Post published!");
+      setEditingPost(null);
       setIsCreating(false);
       resetForm();
-      fetchPosts(password);
-    } catch (error: any) {
-      toast.error(error.message);
-    }
-  };
-
-  const handleUpdate = async () => {
-    if (!editingPost) return;
-
-    try {
-      const response = await fetch(ADMIN_API, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${password}`,
-        },
-        body: JSON.stringify({
-          id: editingPost._id,
-          ...formData,
-          tags: formData.tags.split(",").map((t) => t.trim()).filter(Boolean),
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to update post");
-      }
-
-      toast.success("Post updated successfully");
-      setEditingPost(null);
-      resetForm();
-      fetchPosts(password);
-    } catch (error: any) {
-      toast.error(error.message);
+      await refreshPosts();
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to save post");
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await fetch(ADMIN_API, {
+      const res = await fetch(ADMIN_API, {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${password}`,
-        },
+        headers: apiHeaders(),
         body: JSON.stringify({ id }),
       });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to delete post");
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: res.statusText }));
+        throw new Error(err.error || "Failed to delete");
       }
-
-      toast.success("Post deleted successfully");
+      toast.success("Post deleted");
       setDeleteConfirm(null);
-      fetchPosts(password);
-    } catch (error: any) {
-      toast.error(error.message);
+      await refreshPosts();
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to delete post");
     }
   };
 
   const startEdit = (post: BlogPost) => {
     setEditingPost(post);
+    setIsCreating(false);
     setFormData({
       title: post.title,
       excerpt: post.excerpt,
-      content: post.content,
-      date: post.date,
       author: post.author,
       category: post.category,
       tags: post.tags.join(", "),
       readTime: post.readTime,
       featuredImage: post.featuredImage || "",
-      images: post.images || [],
     });
-    setIsCreating(false);
-  };
-
-  const startCreate = () => {
-    setIsCreating(true);
-    setEditingPost(null);
-    resetForm();
+    setBlocks(parseContent(post.content));
   };
 
   const cancelEdit = () => {
@@ -248,43 +155,14 @@ export default function Admin() {
     resetForm();
   };
 
-  // Login Screen
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-background to-background/80 flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lock className="h-5 w-5" />
-              Admin Login
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Input
-              type="password"
-              placeholder="Enter admin password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-            />
-            <Button onClick={handleLogin} className="w-full">
-              Login
-            </Button>
-            <Link to="/">
-              <Button variant="ghost" className="w-full gap-2">
-                <ArrowLeft className="h-4 w-4" />
-                Back to Home
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const isFormOpen = isCreating || !!editingPost;
+
+  const rawPosts = posts;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
@@ -294,172 +172,143 @@ export default function Admin() {
                 Home
               </Button>
             </Link>
+            <Link to="/blog">
+              <Button variant="ghost" size="sm">View Blog →</Button>
+            </Link>
             <h1 className="text-3xl font-bold text-gradient">Blog Admin</h1>
           </div>
-          <div className="flex gap-2">
-            <Button onClick={startCreate} className="gap-2">
+          {!isFormOpen && (
+            <Button
+              onClick={() => { setIsCreating(true); setEditingPost(null); resetForm(); }}
+              className="gap-2"
+            >
               <Plus className="h-4 w-4" />
               New Post
             </Button>
-            <Button variant="outline" onClick={handleLogout}>
-              Logout
-            </Button>
-          </div>
+          )}
         </div>
 
-        {/* Create/Edit Form */}
-        {(isCreating || editingPost) && (
+        {/* Create / Edit Form */}
+        {isFormOpen && (
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>{editingPost ? "Edit Post" : "Create New Post"}</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>{editingPost ? "Edit Post" : "Create New Post"}</CardTitle>
+                <Button variant="ghost" size="sm" onClick={cancelEdit} className="gap-1">
+                  <X className="h-4 w-4" /> Cancel
+                </Button>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
+              {/* Basic info */}
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium">Title *</label>
+                <div className="col-span-2">
+                  <label className="text-sm font-medium mb-1 block">Title *</label>
                   <Input
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     placeholder="Post title"
+                    className="text-lg"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Category</label>
+                  <label className="text-sm font-medium mb-1 block">Category</label>
                   <Input
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    placeholder="e.g., DevOps"
+                    placeholder="e.g., DevOps, Cloud, Linux"
                   />
                 </div>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium">Excerpt *</label>
-                <Textarea
-                  value={formData.excerpt}
-                  onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                  placeholder="Short description"
-                  rows={2}
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium">Content (HTML) *</label>
-                <Textarea
-                  value={formData.content}
-                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                  placeholder="<p>Your content here...</p>"
-                  rows={8}
-                  className="font-mono text-sm"
-                />
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Author</label>
+                  <label className="text-sm font-medium mb-1 block">Tags (comma-separated)</label>
+                  <Input
+                    value={formData.tags}
+                    onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                    placeholder="kubernetes, docker, devops"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Author</label>
                   <Input
                     value={formData.author}
                     onChange={(e) => setFormData({ ...formData, author: e.target.value })}
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Date</label>
-                  <Input
-                    type="date"
-                    value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Read Time (min)</label>
+                  <label className="text-sm font-medium mb-1 block">Read Time (min)</label>
                   <Input
                     type="number"
                     value={formData.readTime}
-                    onChange={(e) => setFormData({ ...formData, readTime: parseInt(e.target.value) })}
+                    onChange={(e) => setFormData({ ...formData, readTime: parseInt(e.target.value) || 5 })}
                   />
                 </div>
               </div>
 
+              {/* Excerpt */}
               <div>
-                <label className="text-sm font-medium">Tags (comma-separated)</label>
-                <Input
-                  value={formData.tags}
-                  onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                  placeholder="devops, cloud, kubernetes"
+                <label className="text-sm font-medium mb-1 block">
+                  Excerpt * <span className="text-muted-foreground font-normal">(shown on blog listing)</span>
+                </label>
+                <Textarea
+                  value={formData.excerpt}
+                  onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+                  placeholder="A short summary of the post..."
+                  rows={2}
                 />
               </div>
 
+              {/* Cover Image */}
               <div>
-                <label className="text-sm font-medium">Featured Image URL</label>
-                <Input
-                  value={formData.featuredImage}
-                  onChange={(e) => setFormData({ ...formData, featuredImage: e.target.value })}
-                  placeholder="https://example.com/image.jpg"
-                />
+                <label className="text-sm font-medium mb-1 block">
+                  Cover Image <span className="text-muted-foreground font-normal">(featured image)</span>
+                </label>
+                <div className="flex gap-2">
+                  <Input
+                    value={formData.featuredImage.startsWith("data:") ? "(local file — will be stored as base64)" : formData.featuredImage}
+                    onChange={(e) => setFormData({ ...formData, featuredImage: e.target.value })}
+                    placeholder="https://example.com/cover.jpg"
+                    readOnly={formData.featuredImage.startsWith("data:")}
+                    className="flex-1"
+                  />
+                  <input
+                    ref={coverFileRef}
+                    type="file" accept="image/*" className="hidden"
+                    onChange={(e) => { const f = e.target.files?.[0]; if (f) handleCoverUpload(f); e.target.value = ""; }}
+                  />
+                  <Button type="button" variant="outline" className="gap-2 flex-shrink-0" onClick={() => coverFileRef.current?.click()}>
+                    <Upload className="h-4 w-4" /> Upload
+                  </Button>
+                  {formData.featuredImage && (
+                    <Button type="button" variant="ghost" size="sm" className="flex-shrink-0"
+                      onClick={() => setFormData({ ...formData, featuredImage: "" })}>✕</Button>
+                  )}
+                </div>
                 {formData.featuredImage && (
                   <img
                     src={formData.featuredImage}
-                    alt="Featured preview"
-                    className="mt-2 h-32 object-cover rounded-lg"
+                    alt="Cover preview"
+                    className="mt-2 h-40 w-full object-cover rounded-lg border border-border/40"
                     onError={(e) => (e.currentTarget.style.display = "none")}
                   />
                 )}
               </div>
 
-              {/* Multiple Images Section */}
+              {/* Block editor */}
               <div>
-                <label className="text-sm font-medium">Additional Images</label>
-                <div className="flex gap-2 mt-2">
-                  <Input
-                    value={newImageUrl}
-                    onChange={(e) => setNewImageUrl(e.target.value)}
-                    placeholder="https://example.com/image.jpg"
-                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addImage())}
-                  />
-                  <Button type="button" onClick={addImage} className="gap-2">
-                    <ImagePlus className="h-4 w-4" />
-                    Add
-                  </Button>
-                </div>
-                
-                {/* Image Gallery */}
-                {formData.images.length > 0 && (
-                  <div className="grid grid-cols-4 gap-4 mt-4">
-                    {formData.images.map((img, index) => (
-                      <div key={index} className="relative group">
-                        <img
-                          src={img}
-                          alt={`Image ${index + 1}`}
-                          className="w-full h-24 object-cover rounded-lg border"
-                          onError={(e) => (e.currentTarget.src = "/placeholder.svg")}
-                        />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="sm"
-                          className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => removeImage(index)}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                        <p className="text-xs text-muted-foreground mt-1 truncate">{img}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <p className="text-xs text-muted-foreground mt-2">
-                  Add multiple image URLs. These will be displayed in your blog post.
-                </p>
+                <label className="text-sm font-medium mb-2 block">
+                  Content <span className="text-muted-foreground font-normal">(mix text and images in any order)</span>
+                </label>
+                <BlockEditor blocks={blocks} onChange={setBlocks} />
               </div>
 
-              <div className="flex gap-2 pt-4">
-                <Button onClick={editingPost ? handleUpdate : handleCreate} className="gap-2">
-                  <Save className="h-4 w-4" />
-                  {editingPost ? "Update" : "Create"}
+              {/* Save */}
+              <div className="flex gap-2 pt-2 border-t border-border/30">
+                <Button onClick={handleSave} disabled={saving} className="gap-2">
+                  {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                  {editingPost ? "Update Post" : "Publish Post"}
                 </Button>
                 <Button variant="outline" onClick={cancelEdit} className="gap-2">
-                  <X className="h-4 w-4" />
-                  Cancel
+                  <X className="h-4 w-4" /> Cancel
                 </Button>
               </div>
             </CardContent>
@@ -467,56 +316,58 @@ export default function Admin() {
         )}
 
         {/* Posts List */}
-        <Card>
-          <CardHeader>
-            <CardTitle>All Posts ({posts.length})</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <p className="text-muted-foreground">Loading...</p>
-            ) : posts.length === 0 ? (
-              <p className="text-muted-foreground">No posts yet. Create your first post!</p>
-            ) : (
-              <div className="space-y-4">
-                {posts.map((post) => (
-                  <div
-                    key={post._id}
-                    className="flex items-center justify-between p-4 border rounded-lg"
-                  >
-                    <div className="flex items-center gap-4">
+        {!isFormOpen && (
+          <Card>
+            <CardHeader>
+              <CardTitle>All Posts ({posts.length})</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {postsLoading ? (
+                <div className="flex items-center gap-2 text-muted-foreground py-8 justify-center">
+                  <Loader2 className="h-5 w-5 animate-spin" /> Loading posts...
+                </div>
+              ) : rawPosts.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground mb-4">No posts yet.</p>
+                  <Button onClick={() => setIsCreating(true)} className="gap-2">
+                    <Plus className="h-4 w-4" /> Create your first post
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {rawPosts.map((post) => (
+                    <div key={post.id}
+                      className="flex items-center gap-4 p-4 border border-border/50 rounded-lg hover:bg-muted/30 transition-colors">
                       {post.featuredImage && (
-                        <img
-                          src={post.featuredImage}
-                          alt={post.title}
-                          className="w-16 h-16 object-cover rounded"
-                        />
+                        <img src={post.featuredImage} alt={post.title}
+                          className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
+                          onError={(e) => (e.currentTarget.style.display = "none")} />
                       )}
-                      <div>
-                        <h3 className="font-medium">{post.title}</h3>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium truncate">{post.title}</h3>
                         <p className="text-sm text-muted-foreground">
-                          {post.category} • {post.date} • {post.images?.length || 0} images
+                          {post.category && <span>{post.category} · </span>}
+                          {post.readTime} min read
+                          {post.createdAt && <span> · {new Date(post.createdAt).toLocaleDateString()}</span>}
                         </p>
                       </div>
+                      <div className="flex gap-2 flex-shrink-0">
+                        <Button variant="outline" size="sm" onClick={() => startEdit(post)} className="gap-1">
+                          <Edit className="h-3.5 w-3.5" /> Edit
+                        </Button>
+                        <Button variant="outline" size="sm"
+                          className="text-destructive hover:text-destructive gap-1"
+                          onClick={() => setDeleteConfirm(post.id)}>
+                          <Trash2 className="h-3.5 w-3.5" /> Delete
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm" onClick={() => startEdit(post)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-destructive"
-                        onClick={() => setDeleteConfirm(post._id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Delete Confirmation */}
@@ -524,16 +375,13 @@ export default function Admin() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Post</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure? This action cannot be undone.
-            </AlertDialogDescription>
+            <AlertDialogDescription>Are you sure? This cannot be undone.</AlertDialogDescription>
           </AlertDialogHeader>
           <div className="flex gap-4 justify-end">
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteConfirm && handleDelete(deleteConfirm)}
-              className="bg-destructive hover:bg-destructive/90"
-            >
+              className="bg-destructive hover:bg-destructive/90">
               Delete
             </AlertDialogAction>
           </div>

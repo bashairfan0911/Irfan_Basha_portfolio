@@ -17,6 +17,7 @@ import BehavioralQuestions from "./pages/BehavioralQuestions";
 import ToolDetail from "./pages/ToolDetail";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { BlogProvider } from "./context/BlogContext";
+import BlogAuthGate from "./components/BlogAuthGate";
 
 // Redirect component for external interview notes
 const InterviewNotesRedirect = () => {
@@ -45,7 +46,7 @@ const App = () => (
             <Route path="/cv" element={<CV />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:id" element={<BlogPost />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin" element={<BlogAuthGate><Admin /></BlogAuthGate>} />
             <Route path="/project/:id" element={<ProjectDetails />} />
             <Route path="/interview-prep" element={<InterviewPrep />} />
             <Route path="/interview-prep/linux" element={<LinuxQuestions />} />
