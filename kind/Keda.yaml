@@ -1,0 +1,16 @@
+# apiVersion: keda.sh/v1alpha1
+# kind: ScaledObject
+# metadata:
+#   name: portfolio-scaledobject
+#   namespace: portfolio-ns
+# spec:
+#   scaleTargetRef:
+#     apiVersion: apps/v1
+#     kind: Deployment
+#     name: portfolio-deployment
+#   triggers:
+#   - type: mongodb
+#     metadata:
+#       connectionString: $(MONGODB_CONNECTION_STRING)
+#       databaseName: $(MONGODB_DB)
+#       collectionName: $(MONGODB_COLLECTION)

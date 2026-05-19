@@ -45,7 +45,6 @@ export default function Admin() {
   const [blocks, setBlocks] = useState<ContentBlock[]>(defaultBlocks);
   const coverFileRef = useRef<HTMLInputElement | null>(null);
 
-  // Sync password into sessionStorage so BlogAuthGate and Admin share it
   useEffect(() => {
     // password is already verified by BlogAuthGate; just read it
   }, []);
@@ -156,63 +155,67 @@ export default function Admin() {
   };
 
   const isFormOpen = isCreating || !!editingPost;
-
   const rawPosts = posts;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-8">
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6 sm:mb-8">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
             <Link to="/">
-              <Button variant="ghost" className="gap-2">
+              <Button variant="ghost" className="gap-2 text-sm px-2 sm:px-4">
                 <ArrowLeft className="h-4 w-4" />
-                Home
+                <span className="hidden sm:inline">Home</span>
               </Button>
             </Link>
             <Link to="/blog">
-              <Button variant="ghost" size="sm">View Blog →</Button>
+              <Button variant="ghost" size="sm" className="text-sm">View Blog →</Button>
             </Link>
-            <h1 className="text-3xl font-bold text-gradient">Blog Admin</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gradient">Blog Admin</h1>
           </div>
           {!isFormOpen && (
             <Button
               onClick={() => { setIsCreating(true); setEditingPost(null); resetForm(); }}
-              className="gap-2"
+              className="gap-2 text-sm"
             >
               <Plus className="h-4 w-4" />
-              New Post
+              <span>New Post</span>
             </Button>
           )}
         </div>
 
         {/* Create / Edit Form */}
         {isFormOpen && (
-          <Card className="mb-8">
-            <CardHeader>
+          <Card className="mb-8 border-border/50 shadow-lg">
+            <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
-                <CardTitle>{editingPost ? "Edit Post" : "Create New Post"}</CardTitle>
+                <CardTitle className="text-lg sm:text-xl">
+                  {editingPost ? "Edit Post" : "Create New Post"}
+                </CardTitle>
                 <Button variant="ghost" size="sm" onClick={cancelEdit} className="gap-1">
                   <X className="h-4 w-4" /> Cancel
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Basic info */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2">
-                  <label className="text-sm font-medium mb-1 block">Title *</label>
-                  <Input
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    placeholder="Post title"
-                    className="text-lg"
-                  />
-                </div>
+            <CardContent className="space-y-5">
+
+              {/* Title */}
+              <div>
+                <label className="text-sm font-medium mb-1.5 block">Title *</label>
+                <Input
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  placeholder="Post title"
+                  className="text-base sm:text-lg"
+                />
+              </div>
+
+              {/* Category & Tags row */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium mb-1 block">Category</label>
+                  <label className="text-sm font-medium mb-1.5 block">Category</label>
                   <Input
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
@@ -220,33 +223,38 @@ export default function Admin() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-1 block">Tags (comma-separated)</label>
+                  <label className="text-sm font-medium mb-1.5 block">Tags <span className="text-muted-foreground font-normal">(comma-separated)</span></label>
                   <Input
                     value={formData.tags}
                     onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
                     placeholder="kubernetes, docker, devops"
                   />
                 </div>
+              </div>
+
+              {/* Author & Read Time */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium mb-1 block">Author</label>
+                  <label className="text-sm font-medium mb-1.5 block">Author</label>
                   <Input
                     value={formData.author}
                     onChange={(e) => setFormData({ ...formData, author: e.target.value })}
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-1 block">Read Time (min)</label>
+                  <label className="text-sm font-medium mb-1.5 block">Read Time (min)</label>
                   <Input
                     type="number"
                     value={formData.readTime}
                     onChange={(e) => setFormData({ ...formData, readTime: parseInt(e.target.value) || 5 })}
+                    min={1}
                   />
                 </div>
               </div>
 
               {/* Excerpt */}
               <div>
-                <label className="text-sm font-medium mb-1 block">
+                <label className="text-sm font-medium mb-1.5 block">
                   Excerpt * <span className="text-muted-foreground font-normal">(shown on blog listing)</span>
                 </label>
                 <Textarea
@@ -259,24 +267,26 @@ export default function Admin() {
 
               {/* Cover Image */}
               <div>
-                <label className="text-sm font-medium mb-1 block">
+                <label className="text-sm font-medium mb-1.5 block">
                   Cover Image <span className="text-muted-foreground font-normal">(featured image)</span>
                 </label>
                 <div className="flex gap-2">
                   <Input
-                    value={formData.featuredImage.startsWith("data:") ? "(local file — will be stored as base64)" : formData.featuredImage}
+                    value={formData.featuredImage.startsWith("data:") ? "(local file — stored as base64)" : formData.featuredImage}
                     onChange={(e) => setFormData({ ...formData, featuredImage: e.target.value })}
                     placeholder="https://example.com/cover.jpg"
                     readOnly={formData.featuredImage.startsWith("data:")}
-                    className="flex-1"
+                    className="flex-1 min-w-0"
                   />
                   <input
                     ref={coverFileRef}
                     type="file" accept="image/*" className="hidden"
                     onChange={(e) => { const f = e.target.files?.[0]; if (f) handleCoverUpload(f); e.target.value = ""; }}
                   />
-                  <Button type="button" variant="outline" className="gap-2 flex-shrink-0" onClick={() => coverFileRef.current?.click()}>
-                    <Upload className="h-4 w-4" /> Upload
+                  <Button type="button" variant="outline" className="gap-1.5 flex-shrink-0 text-sm px-2 sm:px-4"
+                    onClick={() => coverFileRef.current?.click()}>
+                    <Upload className="h-4 w-4" />
+                    <span className="hidden sm:inline">Upload</span>
                   </Button>
                   {formData.featuredImage && (
                     <Button type="button" variant="ghost" size="sm" className="flex-shrink-0"
@@ -287,7 +297,7 @@ export default function Admin() {
                   <img
                     src={formData.featuredImage}
                     alt="Cover preview"
-                    className="mt-2 h-40 w-full object-cover rounded-lg border border-border/40"
+                    className="mt-3 h-32 sm:h-40 w-full object-cover rounded-lg border border-border/40"
                     onError={(e) => (e.currentTarget.style.display = "none")}
                   />
                 )}
@@ -296,13 +306,13 @@ export default function Admin() {
               {/* Block editor */}
               <div>
                 <label className="text-sm font-medium mb-2 block">
-                  Content <span className="text-muted-foreground font-normal">(mix text and images in any order)</span>
+                  Content <span className="text-muted-foreground font-normal">— write with rich text editor or upload a Markdown file</span>
                 </label>
                 <BlockEditor blocks={blocks} onChange={setBlocks} />
               </div>
 
-              {/* Save */}
-              <div className="flex gap-2 pt-2 border-t border-border/30">
+              {/* Save / Cancel */}
+              <div className="flex flex-wrap gap-2 pt-2 border-t border-border/30">
                 <Button onClick={handleSave} disabled={saving} className="gap-2">
                   {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                   {editingPost ? "Update Post" : "Publish Post"}
@@ -317,9 +327,9 @@ export default function Admin() {
 
         {/* Posts List */}
         {!isFormOpen && (
-          <Card>
+          <Card className="border-border/50 shadow-lg">
             <CardHeader>
-              <CardTitle>All Posts ({posts.length})</CardTitle>
+              <CardTitle className="text-lg sm:text-xl">All Posts ({posts.length})</CardTitle>
             </CardHeader>
             <CardContent>
               {postsLoading ? (
@@ -337,26 +347,26 @@ export default function Admin() {
                 <div className="space-y-3">
                   {rawPosts.map((post) => (
                     <div key={post.id}
-                      className="flex items-center gap-4 p-4 border border-border/50 rounded-lg hover:bg-muted/30 transition-colors">
+                      className="flex flex-col sm:flex-row sm:items-center gap-3 p-3 sm:p-4 border border-border/50 rounded-xl hover:bg-muted/30 transition-colors">
                       {post.featuredImage && (
                         <img src={post.featuredImage} alt={post.title}
-                          className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
+                          className="w-full h-32 sm:w-16 sm:h-16 object-cover rounded-lg flex-shrink-0"
                           onError={(e) => (e.currentTarget.style.display = "none")} />
                       )}
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-medium truncate">{post.title}</h3>
-                        <p className="text-sm text-muted-foreground">
+                        <h3 className="font-medium truncate text-sm sm:text-base">{post.title}</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
                           {post.category && <span>{post.category} · </span>}
                           {post.readTime} min read
                           {post.createdAt && <span> · {new Date(post.createdAt).toLocaleDateString()}</span>}
                         </p>
                       </div>
-                      <div className="flex gap-2 flex-shrink-0">
-                        <Button variant="outline" size="sm" onClick={() => startEdit(post)} className="gap-1">
+                      <div className="flex gap-2 flex-shrink-0 self-end sm:self-auto">
+                        <Button variant="outline" size="sm" onClick={() => startEdit(post)} className="gap-1 text-xs">
                           <Edit className="h-3.5 w-3.5" /> Edit
                         </Button>
                         <Button variant="outline" size="sm"
-                          className="text-destructive hover:text-destructive gap-1"
+                          className="text-destructive hover:text-destructive gap-1 text-xs"
                           onClick={() => setDeleteConfirm(post.id)}>
                           <Trash2 className="h-3.5 w-3.5" /> Delete
                         </Button>
@@ -372,7 +382,7 @@ export default function Admin() {
 
       {/* Delete Confirmation */}
       <AlertDialog open={deleteConfirm !== null} onOpenChange={() => setDeleteConfirm(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="mx-4 sm:mx-auto">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Post</AlertDialogTitle>
             <AlertDialogDescription>Are you sure? This cannot be undone.</AlertDialogDescription>

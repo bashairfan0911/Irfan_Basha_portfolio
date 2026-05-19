@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: portfolio-config
+  namespace: portfolio-ns
+data:
+  # Add your configuration values here
+ MONGODB_HOST: localhost
+ MONGODB_PORT: "1234" 
+ MONGODB_DB: portfolio-db

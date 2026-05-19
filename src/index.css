@@ -116,11 +116,29 @@ All colors MUST be HSL.
 @layer base {
   * {
     @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html {
+    overflow-x: hidden;
   }
 
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', 'system-ui', sans-serif;
+    overflow-x: hidden;
+    width: 100%;
+  }
+}
+
+@layer utilities {
+  /* Hide scrollbar visually but keep scroll functionality */
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
   }
 }
 
@@ -183,4 +201,140 @@ All colors MUST be HSL.
     from { width: 0%; }
     to { width: var(--progress-width); }
   }
-}
+
+  /* ─── Rich Text Editor ─────────────────────────── */
+
+  /* Placeholder shown only when the editor is truly empty */
+  .rich-editor:not(:focus):empty::before,
+  .rich-editor:focus:empty::before {
+    content: attr(data-placeholder);
+    color: hsl(var(--muted-foreground) / 0.6);
+    pointer-events: none;
+    white-space: pre-line;   /* allow \n in placeholder */
+    display: block;
+  }
+
+  /* Content renders as proper HTML — NO white-space:pre-wrap on the container */
+  .rich-editor {
+    outline: none;
+    line-height: 1.7;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .rich-editor h1 { font-size: 1.75rem; font-weight: 700; margin: 0.75rem 0 0.4rem; line-height: 1.25; color: hsl(var(--foreground)); }
+  .rich-editor h2 { font-size: 1.35rem; font-weight: 700; margin: 0.65rem 0 0.35rem; line-height: 1.3; color: hsl(var(--foreground)); }
+  .rich-editor h3 { font-size: 1.15rem; font-weight: 600; margin: 0.55rem 0 0.3rem; line-height: 1.35; color: hsl(var(--foreground)); }
+  .rich-editor p  { margin: 0.35rem 0; }
+  .rich-editor div { margin: 0.1rem 0; }
+  .rich-editor ul { list-style: disc outside; padding-left: 1.5rem; margin: 0.4rem 0; }
+  .rich-editor ol { list-style: decimal outside; padding-left: 1.5rem; margin: 0.4rem 0; }
+  .rich-editor li { margin: 0.2rem 0; }
+  .rich-editor strong, .rich-editor b { font-weight: 700; }
+  .rich-editor em, .rich-editor i { font-style: italic; }
+  .rich-editor u { text-decoration: underline; }
+  .rich-editor pre {
+    background: hsl(var(--muted));
+    color: hsl(var(--primary));
+    font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+    font-size: 0.82rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin: 0.5rem 0;
+    display: block;
+  }
+  .rich-editor code {
+    background: hsl(var(--muted));
+    color: hsl(var(--primary));
+    font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+    font-size: 0.82rem;
+    padding: 0.12rem 0.35rem;
+    border-radius: 0.25rem;
+  }
+  .rich-editor blockquote {
+    border-left: 3px solid hsl(var(--primary));
+    padding-left: 1rem;
+    margin: 0.5rem 0;
+    color: hsl(var(--muted-foreground));
+    font-style: italic;
+  }
+  .rich-editor hr {
+    border: none;
+    border-top: 1px solid hsl(var(--border));
+    margin: 0.75rem 0;
+  }
+  .rich-editor a { color: hsl(var(--primary)); text-decoration: underline; }
+
+  /* ─── Prose overrides (blog post reader view) ─── */
+  .prose pre code { background: transparent; padding: 0; color: inherit; }
+  .prose table { width: 100%; border-collapse: collapse; overflow-x: auto; display: block; }
+  .prose th, .prose td { border: 1px solid hsl(var(--border) / 0.5); padding: 0.4rem 0.6rem; }
+  .prose th { background: hsl(var(--muted) / 0.5); font-weight: 600; }
+
+  /* ─── Blog-prose: prevent content overflow ─── */
+  .blog-prose { width: 100%; max-width: 100%; word-break: break-word; }
+  .blog-prose img { max-width: 100%; height: auto; display: block; }
+  .blog-prose pre {
+    position: relative;
+    white-space: pre-wrap;      /* wrap long lines — no separate scrollbar */
+    word-break: break-all;
+    overflow-x: hidden;
+    padding-top: 2.5rem;        /* space for the Copy button */
+  }
+  .blog-prose pre code {
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  /* ─── Copy button (injected into <pre> blocks) ─── */
+  .copy-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.3rem;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.7rem;
+    font-family: inherit;
+    line-height: 1.4;
+    border-radius: 0.6rem 0.6rem 0 0;
+    border: none;
+    border-bottom: 1px solid hsl(var(--border) / 0.3);
+    background: hsl(220 16% 14%);
+    color: hsl(var(--muted-foreground));
+    cursor: pointer;
+    transition: color 0.15s;
+    z-index: 10;
+    user-select: none;
+    width: 100%;
+  }
+  .copy-btn:hover {
+    color: hsl(var(--primary));
+    background: hsl(220 16% 17%);
+  }
+  .copy-btn.copied {
+    color: hsl(142 70% 55%);
+    background: hsl(142 70% 10% / 0.4);
+  }
+
+  /* ─── Inline code: click-to-copy cursor indicator ─── */
+  .blog-prose code:not(pre code) {
+    cursor: pointer;
+    position: relative;
+  }
+  .blog-prose code:not(pre code):hover::after {
+    content: " 📋";
+    font-size: 0.7em;
+    opacity: 0.6;
+  }
+
+  /* Responsive utility for admin grid */
+  @media (max-width: 640px) {
+    .admin-form-grid { grid-template-columns: 1fr !important; }
+  }
+}
