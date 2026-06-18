@@ -19,6 +19,8 @@ export interface BlogPost {
   readTime: number;
   featuredImage?: string;
   createdAt: string;
+  hidden?: boolean;
+  pdfUrl?: string;
 }
 
 // Raw shape returned from MongoDB
@@ -33,6 +35,8 @@ interface MongoPost {
   readTime: number;
   featuredImage?: string;
   createdAt: string;
+  hidden?: boolean;
+  pdfUrl?: string;
 }
 
 interface BlogContextType {
@@ -57,6 +61,8 @@ function transformPost(p: MongoPost): BlogPost {
     readTime: p.readTime || 5,
     featuredImage: p.featuredImage || undefined,
     createdAt: p.createdAt || p._id, // fallback
+    hidden: p.hidden || false,
+    pdfUrl: p.pdfUrl || undefined,
   };
 }
 

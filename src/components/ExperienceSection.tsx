@@ -1,149 +1,108 @@
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Building, Calendar, MapPin } from "lucide-react";
+import { Calendar, MapPin, Briefcase, FolderGit2 } from "lucide-react";
 
 const experiences = [
   {
     id: 1,
-    company: "Retail Store Sample App - GitOps with Amazon EKS",
-    position: "DevOps Engineer & Cloud Architect",
-    duration: "2024 - 2025",
-    location: "Personal Project",
-    type: "Project",
-    description: "Deployed a production-grade microservices retail application on AWS EKS using GitOps principles with automated CI/CD pipeline. Implemented infrastructure as code with Terraform and continuous deployment with ArgoCD.",
-    achievements: [
-      "Architected and deployed 5 microservices (UI, Catalog, Cart, Orders, Checkout) on AWS EKS Auto Mode",
-      "Implemented GitOps workflow with ArgoCD for automated deployments and rollbacks",
-      "Built CI/CD pipeline using GitHub Actions for automated Docker image builds and ECR pushes",
-      "Provisioned AWS infrastructure using Terraform including VPC, EKS cluster, and security groups",
-      "Configured NGINX Ingress Controller and Cert Manager for SSL/TLS termination",
-      "Set up Helm charts for each microservice with automated version updates on code changes",
-      "Implemented monitoring and observability with Prometheus and Grafana stack",
-      "Achieved zero-downtime deployments with automated health checks and rollback capabilities"
-    ],
-    technologies: ["AWS EKS", "Terraform", "ArgoCD", "GitHub Actions", "Docker", "Kubernetes", "Helm", "NGINX", "ECR", "Prometheus", "Grafana"]
-  },
-  {
-    id: 2,
-    company: "EkoMart - E-Commerce Platform",
-    position: "Full-Stack MERN Developer",
-    duration: "2024 - 2025",
-    location: "Personal Project",
-    type: "Project",
-    description: "Built a full-stack e-commerce application with admin panel, product management, shopping cart, and payment integration using the MERN stack (MongoDB, Express, React, Node.js).",
-    achievements: [
-      "Implemented user authentication with JWT and secure password hashing using Bcrypt",
-      "Integrated Razorpay payment gateway for seamless checkout experience",
-      "Built admin dashboard for product, category, and order management",
-      "Configured Cloudinary for efficient image storage and delivery",
-      "Developed RESTful APIs with Express and MongoDB for scalable backend",
-      "Created responsive UI with Material-UI and React Router for navigation",
-      "Deployed with Netlify (frontend) and configured for production environment"
-    ],
-    technologies: ["React", "Node.js", "Express", "MongoDB", "JWT", "Razorpay", "Cloudinary", "Material-UI", "Vite"]
-  },
-  {
-    id: 2,
-    company: "Personal Projects & Learning",
-    position: "Self-Directed Learning",
-    duration: "2024 - Present",
+    company: "PearlThoughts",
+    position: "DevOps Engineer Intern",
+    duration: "Dec 2025 – Jan 2026",
     location: "Remote",
-    type: "Self-Study",
-    description: "Building practical skills through hands-on projects and continuous learning in DevOps and data analytics.",
+    type: "Internship",
+    typeColor: "#00d4ff",
     achievements: [
-      "Developed portfolio website using React, TypeScript, and Tailwind CSS",
-      "Learning cloud technologies including AWS, Docker, and Kubernetes",
-      "Practicing CI/CD pipelines and infrastructure automation",
-      "Exploring data analysis tools and visualization techniques"
+      "Built AWS infrastructure using Terraform IaC (EC2, Security Groups, IAM, networking)",
+      "Automated server provisioning with Bash scripts",
+      "Worked on CI/CD pipelines applying cloud best practices",
     ],
-    technologies: ["React", "TypeScript", "Docker", "Git", "Linux", "Python"]
-  }
+    technologies: ["AWS", "Terraform", "EC2", "IAM", "Bash", "CI/CD"],
+  },
+  {
+    id: 2,
+    company: "Three-tier App on AWS EKS",
+    position: "Cloud & DevOps Engineer",
+    duration: "2024 – 2025",
+    location: "Personal Project",
+    type: "Project",
+    typeColor: "#00ff88",
+    achievements: [
+      "Deployed ReactJS/NodeJS/MongoDB on EKS with 99.9% uptime via AWS Load Balancer Controller",
+      "Cut provisioning time from 4 hrs → 15 min using Terraform; deployment time ↓ 70% via Jenkins + ArgoCD",
+      "40% cost optimization with efficient resource management & auto-cleanup",
+    ],
+    technologies: ["AWS EKS", "Terraform", "Jenkins", "ArgoCD", "Docker", "Kubernetes", "Prometheus", "Grafana"],
+  },
+  {
+    id: 3,
+    company: "Wanderlust — Blogging Platform",
+    position: "Full-Stack & DevOps Engineer",
+    duration: "2024 – 2025",
+    location: "Personal Project",
+    type: "Project",
+    typeColor: "#a855f7",
+    achievements: [
+      "Production-ready MERN platform with JWT auth, Redis caching, RESTful API — 99.9% availability",
+      "Containerised all services with Docker: eliminated config drift across environments",
+      "Jenkins CI/CD pipeline + Jest tests cut manual deployment steps by 80%",
+    ],
+    technologies: ["React", "Node.js", "Express", "TypeScript", "Redis", "Docker", "Jenkins", "Jest"],
+  },
 ];
 
-export const ExperienceSection = () => {
-  return (
-    <section className="py-20 bg-background/50">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4">
-            <span className="text-gradient">Experience & Projects</span>
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Building skills through hands-on learning and personal projects
-          </p>
-        </div>
+export const ExperienceSection = () => (
+  <div className="glass-card rounded-2xl border border-border/30 p-5">
+    <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.2em] mb-5">Experience & Projects</p>
 
-        <div className="max-w-4xl mx-auto">
-          <div className="relative">
-            {/* Timeline line */}
-            <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-tech-accent to-data-viz opacity-30"></div>
+    <div className="relative">
+      {/* Timeline line */}
+      <div className="absolute left-3.5 top-2 bottom-2 w-px bg-gradient-to-b from-primary/50 via-green-400/30 to-transparent" />
 
-            <div className="space-y-12">
-              {experiences.map((exp, index) => (
-                <div 
-                  key={exp.id} 
-                  className="relative animate-fade-in"
-                  style={{ animationDelay: `${index * 300}ms` }}
-                >
-                  {/* Timeline dot */}
-                  <div className="absolute left-6 w-4 h-4 bg-primary rounded-full border-4 border-background glow-effect"></div>
-                  
-                  <div className="ml-20">
-                    <Card className="card-gradient border-border/50 p-8 hover:scale-[1.02] transition-all duration-300">
-                      <div className="flex flex-col lg:flex-row lg:items-start gap-6">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-3">
-                            <Building className="w-6 h-6 text-primary" />
-                            <h3 className="text-xl font-semibold text-card-foreground">{exp.company}</h3>
-                            <Badge className="bg-primary/10 text-primary border-primary/20">
-                              {exp.type}
-                            </Badge>
-                          </div>
-                          
-                          <h4 className="text-lg font-medium text-tech-accent mb-2">{exp.position}</h4>
-                          
-                          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
-                            <div className="flex items-center gap-1">
-                              <Calendar className="w-5 h-5" />
-                              {exp.duration}
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <MapPin className="w-5 h-5" />
-                              {exp.location}
-                            </div>
-                          </div>
-                          
-                          <p className="text-muted-foreground mb-6 leading-relaxed">{exp.description}</p>
-                          
-                          <div className="space-y-2 mb-6">
-                            <h5 className="font-medium text-card-foreground">Key Achievements:</h5>
-                            <ul className="space-y-2">
-                              {exp.achievements.map((achievement, idx) => (
-                                <li key={idx} className="flex items-start gap-2 text-sm text-muted-foreground">
-                                  <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                                  {achievement}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                          
-                          <div className="flex flex-wrap gap-2">
-                            {exp.technologies.map((tech) => (
-                              <Badge key={tech} variant="outline" className="text-xs border-primary/30 text-primary">
-                                {tech}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
-                  </div>
+      <div className="space-y-5">
+        {experiences.map(({ id, company, position, duration, location, type, typeColor, achievements, technologies }) => (
+          <div key={id} className="flex gap-4">
+            {/* Dot */}
+            <div className="flex-shrink-0 mt-1.5 relative z-10">
+              <div className="w-2 h-2 rounded-full ml-2.5" style={{ background: typeColor, boxShadow: `0 0 6px ${typeColor}80` }} />
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 min-w-0 pb-4 border-b border-border/20 last:border-0 last:pb-0">
+              <div className="flex flex-wrap items-start justify-between gap-2 mb-1">
+                <div>
+                  <h4 className="text-sm font-bold text-foreground leading-tight">{company}</h4>
+                  <p className="text-xs font-mono mt-0.5" style={{ color: typeColor }}>{position}</p>
                 </div>
-              ))}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className="text-[9px] font-mono px-2 py-0.5 rounded-full border"
+                    style={{ color: typeColor, borderColor: `${typeColor}30`, background: `${typeColor}10` }}>
+                    {type}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-3 text-[10px] text-muted-foreground font-mono mb-2">
+                <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" />{duration}</span>
+                <span className="flex items-center gap-1"><MapPin className="w-2.5 h-2.5" />{location}</span>
+              </div>
+
+              <ul className="space-y-1 mb-2">
+                {achievements.map((a, i) => (
+                  <li key={i} className="flex items-start gap-1.5 text-[11px] text-muted-foreground leading-relaxed">
+                    <span className="text-primary mt-0.5 flex-shrink-0">✦</span>{a}
+                  </li>
+                ))}
+              </ul>
+
+              <div className="flex flex-wrap gap-1">
+                {technologies.map((t) => (
+                  <span key={t} className="text-[9px] font-mono px-1.5 py-0.5 rounded border border-border/30 text-muted-foreground">
+                    {t}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        ))}
       </div>
-    </section>
-  );
-};
+    </div>
+  </div>
+);

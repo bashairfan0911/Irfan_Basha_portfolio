@@ -2,7 +2,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Calendar, User, Clock, Loader2, Copy, Check } from "lucide-react";
+import { ArrowLeft, Calendar, User, Clock, Loader2, FileText, Download } from "lucide-react";
 import { useBlog, parseContent, ContentBlock } from "@/context/BlogContext";
 
 // ─── Copy button injector ─────────────────────────────────────────────────────
@@ -89,8 +89,8 @@ function TextBlock({ html }: { html: string }) {
         prose-strong:text-foreground prose-strong:font-semibold
         prose-em:text-foreground/80
         prose-code:text-primary prose-code:bg-muted/70 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-[0.82em] prose-code:font-mono prose-code:before:content-none prose-code:after:content-none
-        prose-pre:bg-[hsl(220_16%_10%)] prose-pre:border prose-pre:border-border/50 prose-pre:rounded-xl prose-pre:text-sm prose-pre:leading-relaxed prose-pre:my-6 prose-pre:overflow-x-auto prose-pre:whitespace-pre-wrap prose-pre:break-all prose-pre:pt-10
-        prose-pre:code:bg-transparent prose-pre:code:text-[hsl(200_100%_75%)] prose-pre:code:p-0 prose-pre:code:whitespace-pre-wrap prose-pre:code:break-all
+        prose-pre:my-6
+        prose-pre:code:bg-transparent prose-pre:code:p-0
         prose-a:text-primary prose-a:underline prose-a:underline-offset-2 hover:prose-a:opacity-75
         prose-ul:text-foreground/80 prose-ul:my-4 prose-ul:pl-6
         prose-ol:text-foreground/80 prose-ol:my-4 prose-ol:pl-6
@@ -190,21 +190,24 @@ export default function BlogPost() {
   const blocks = parseContent(post.content);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white text-gray-900" data-theme="light">
 
-      {/* ── Sticky topbar ── */}
-      <div className="sticky top-0 z-30 bg-background/90 backdrop-blur-md border-b border-border/40 px-3 sm:px-6 py-2.5 flex items-center gap-2">
-        <Button variant="ghost" size="sm" onClick={() => navigate("/blog")} className="gap-1.5 text-xs sm:text-sm h-8 px-2 sm:px-3">
+      {/* ── Top bar — integrates with the hamburger at top-left ── */}
+      <div className="fixed top-0 left-0 right-0 z-40 h-14 bg-white border-b border-gray-200 flex items-center">
+        {/* left gap for hamburger button (w-10 + left-4 + right gap) */}
+        <div className="w-16 flex-shrink-0" />
+        {/* breadcrumb */}
+        <Button variant="ghost" size="sm" onClick={() => navigate("/blog")} className="gap-1.5 text-xs sm:text-sm h-8 px-2 sm:px-3 text-gray-700 hover:text-gray-900">
           <ArrowLeft className="h-3.5 w-3.5" /> Blog
         </Button>
-        <span className="text-border/60">·</span>
+        <span className="text-gray-300 text-base">·</span>
         <Link to="/">
-          <Button variant="ghost" size="sm" className="text-xs sm:text-sm h-8 px-2 sm:px-3">Home</Button>
+          <Button variant="ghost" size="sm" className="text-xs sm:text-sm h-8 px-2 sm:px-3 text-gray-700 hover:text-gray-900">Home</Button>
         </Link>
-        <span className="ml-auto text-xs text-muted-foreground hidden sm:block truncate max-w-xs">
-          {post.title}
-        </span>
+        <span className="ml-auto pr-4 text-xs text-gray-400 hidden sm:block truncate max-w-xs">{post.title}</span>
       </div>
+      {/* spacer so content starts below the fixed bar */}
+      <div className="h-14" />
 
       {/* ── Cover image (full width, no card) ── */}
       {post.featuredImage && (
@@ -219,7 +222,7 @@ export default function BlogPost() {
       )}
 
       {/* ── Main content — full-width reading column for 16" laptops ── */}
-      <div className="w-full max-w-5xl mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-12">
+      <div className="w-full px-4 sm:px-8 lg:px-14 xl:px-20 py-8 sm:py-12">
 
         {/* Category */}
         {post.category && (
@@ -257,7 +260,35 @@ export default function BlogPost() {
         {/* Content blocks */}
         <BlockRenderer blocks={blocks} />
 
-        {/* Tags */}
+        {/* PDF Attachment */}
+        {post.pdfUrl && (
+          <div className="mt-10 p-4 sm:p-5 rounded-xl border border-blue-500/20 bg-blue-500/5 flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                <FileText className="h-5 w-5 text-blue-400" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-foreground">PDF Attachment</p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {post.pdfUrl.startsWith("data:") ? "Document attached to this post" : post.pdfUrl}
+                </p>
+              </div>
+            </div>
+            <a
+              href={post.pdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              download={post.pdfUrl.startsWith("data:") ? `${post.title.replace(/\s+/g, "_")}.pdf` : undefined}
+              className="flex-shrink-0"
+            >
+              <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition-colors">
+                <Download className="h-4 w-4" />
+                Download PDF
+              </button>
+            </a>
+          </div>
+        )}
+
         {post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-10 pt-6 border-t border-border/40">
             {post.tags.map((tag) => (

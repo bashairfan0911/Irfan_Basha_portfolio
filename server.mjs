@@ -23,7 +23,7 @@ const app = express();
 app.use(express.json({ limit: "50mb" }));          // large limit for base64 images
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   if (req.method === "OPTIONS") return res.status(200).end();
   next();
@@ -46,7 +46,7 @@ async function withMongo(fn) {
 app.get("/api/posts.mjs", async (_req, res) => {
   try {
     const posts = await withMongo((col) =>
-      col.find({}).sort({ createdAt: -1 }).toArray()
+      col.find({ hidden: { $ne: true } }).sort({ createdAt: -1 }).toArray()
     );
     const transformed = posts.map((p) => ({ ...p, _id: p._id.toString() }));
     res.json({ posts: transformed });
@@ -64,6 +64,14 @@ app.all("/api/admin/posts.mjs", async (req, res) => {
   }
 
   try {
+    if (req.method === "GET") {
+      const posts = await withMongo((col) =>
+        col.find({}).sort({ createdAt: -1 }).toArray()
+      );
+      const transformed = posts.map((p) => ({ ...p, _id: p._id.toString() }));
+      return res.json({ posts: transformed });
+    }
+
     if (req.method === "POST") {
       const post = { ...req.body, createdAt: new Date().toISOString() };
       const result = await withMongo((col) => col.insertOne(post));
@@ -76,6 +84,18 @@ app.all("/api/admin/posts.mjs", async (req, res) => {
       updateData.updatedAt = new Date().toISOString();
       await withMongo((col) =>
         col.updateOne({ _id: new ObjectId(id) }, { $set: updateData })
+      );
+      return res.json({ success: true });
+    }
+
+    if (req.method === "PATCH") {
+      const { id, hidden } = req.body;
+      if (!id) return res.status(400).json({ error: "Post ID required" });
+      await withMongo((col) =>
+        col.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { hidden: !!hidden, updatedAt: new Date().toISOString() } }
+        )
       );
       return res.json({ success: true });
     }

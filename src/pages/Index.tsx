@@ -1,4 +1,5 @@
 import { HeroSection } from "@/components/HeroSection";
+import { AboutSection } from "@/components/AboutSection";
 import { SkillsSection } from "@/components/SkillsSection";
 import { ProjectsSection } from "@/components/ProjectsSection";
 import { EducationSection } from "@/components/EducationSection";
@@ -8,11 +9,12 @@ const Index = () => {
   return (
     <main className="overflow-x-hidden">
       <HeroSection />
-      <SkillsSection />
-      <ProjectsSection />
-      <EducationSection />
-      <ContactSection />
-      
+      <div id="about"><AboutSection /></div>
+      <div id="skills"><SkillsSection /></div>
+      <div id="projects"><ProjectsSection /></div>
+      <div id="education"><EducationSection /></div>
+      <div id="contact"><ContactSection /></div>
+
       {/* Footer */}
       <footer className="bg-background/80 border-t border-border/50 py-8">
         <div className="container mx-auto px-4 text-center">

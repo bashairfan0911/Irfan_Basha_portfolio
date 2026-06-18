@@ -1,35 +1,23 @@
-import { Card } from "@/components/ui/card";
-import { User } from "lucide-react";
+import { Terminal } from "lucide-react";
 
-export const ProfessionalSummary = () => {
-  return (
-    <section className="py-20 bg-background/50">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4">
-            <span className="text-gradient">Professional Summary</span>
-          </h2>
-        </div>
-
-        <div className="max-w-4xl mx-auto">
-          <Card className="card-gradient border-border/50 p-8">
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-lg bg-primary/10">
-                <User className="w-6 h-6 text-primary" />
-              </div>
-              <div className="flex-1">
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  Fresh graduate with a strong foundation in DevOps practices, cloud computing, and data analytics. 
-                  Passionate about automation, infrastructure as code, and building scalable solutions. 
-                  AWS Certified Solutions Architect with hands-on experience in containerization, CI/CD pipelines, 
-                  and cloud infrastructure management. Eager to contribute to innovative projects and grow in a 
-                  dynamic technology environment.
-                </p>
-              </div>
-            </div>
-          </Card>
-        </div>
-      </div>
-    </section>
-  );
-};
+export const ProfessionalSummary = () => (
+  <div className="glass-card rounded-2xl border border-primary/20 overflow-hidden">
+    <div className="flex items-center gap-2 px-4 py-2.5 bg-muted/30 border-b border-border/30">
+      <span className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
+      <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
+      <span className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
+      <Terminal className="w-3.5 h-3.5 text-muted-foreground ml-2" />
+      <span className="text-xs font-mono text-muted-foreground">summary.txt</span>
+    </div>
+    <div className="px-5 py-4">
+      <p className="text-sm text-foreground/90 leading-relaxed">
+        <span className="text-primary font-mono text-xs mr-1">&gt;</span>
+        AWS Certified DevOps Engineer with hands-on experience in cloud automation, CI/CD pipelines,
+        Infrastructure as Code, and Kubernetes. Proficient in deploying and managing scalable
+        microservices on AWS EKS using GitOps, Prometheus/Grafana monitoring, and Terraform IaC.
+        Seeking a DevOps or Platform Engineering role to automate infrastructure, streamline
+        deployments, and improve system reliability at scale.
+      </p>
+    </div>
+  </div>
+);

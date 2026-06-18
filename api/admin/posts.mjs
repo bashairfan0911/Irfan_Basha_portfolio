@@ -4,7 +4,7 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (req.method === "OPTIONS") {
@@ -33,6 +33,13 @@ export default async function handler(req, res) {
     const db = client.db(dbName);
     const collection = db.collection(collectionName);
 
+    // GET ALL (admin — includes hidden posts)
+    if (req.method === "GET") {
+      const posts = await collection.find({}).sort({ createdAt: -1 }).toArray();
+      const transformed = posts.map((p) => ({ ...p, _id: p._id.toString() }));
+      return res.status(200).json({ posts: transformed });
+    }
+
     // CREATE
     if (req.method === "POST") {
       const post = req.body;
@@ -51,6 +58,19 @@ export default async function handler(req, res) {
       await collection.updateOne(
         { _id: new ObjectId(id) },
         { $set: updateData }
+      );
+      return res.status(200).json({ success: true });
+    }
+
+    // TOGGLE HIDDEN
+    if (req.method === "PATCH") {
+      const { id, hidden } = req.body;
+      if (!id) {
+        return res.status(400).json({ error: "Post ID required" });
+      }
+      await collection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { hidden: !!hidden, updatedAt: new Date().toISOString() } }
       );
       return res.status(200).json({ success: true });
     }

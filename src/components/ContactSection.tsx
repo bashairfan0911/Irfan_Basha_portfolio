@@ -1,232 +1,135 @@
-import { useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Mail, Phone, MapPin, Linkedin, Github, Send } from "lucide-react";
+import { useState, useRef } from "react";
+import { Mail, Phone, MapPin, Linkedin, Github, Send, Terminal, CheckCircle } from "lucide-react";
+
+function TiltCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = ref.current!;
+    const r = el.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width  - 0.5) * 2;
+    const y = ((e.clientY - r.top)  / r.height - 0.5) * 2;
+    el.style.transform = `perspective(900px) rotateX(${-y * 5}deg) rotateY(${x * 5}deg) translateZ(5px)`;
+  };
+  const onLeave = () => { ref.current!.style.transform = "none"; };
+  return (
+    <div ref={ref} onMouseMove={onMove} onMouseLeave={onLeave}
+      className={`tilt-card relative transition-transform duration-300 ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+const socials = [
+  { icon: Mail,     label: "Email",    href: "mailto:bashairfan0911@gmail.com", value: "bashairfan0911@gmail.com", color: "#00d4ff" },
+  { icon: Phone,    label: "Phone",    href: "tel:+918610164761",               value: "+91 86101 64761",          color: "#00ff88" },
+  { icon: MapPin,   label: "Location", href: "#",                               value: "Chennai, India",           color: "#f59e0b" },
+  { icon: Linkedin, label: "LinkedIn", href: "https://www.linkedin.com/in/irfan-basha-786ab4245/", value: "irfan-basha-786ab4245", color: "#0A66C2" },
+  { icon: Github,   label: "GitHub",   href: "https://github.com/bashairfan0911",                  value: "bashairfan0911",        color: "#e2e8f0" },
+];
+
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyi1eZoWd53OjQrJsjMi0bAeXdj_8PojK2aJMXE3f7z3yYDoL9c8-zLp7IcYYcOgcFD9w/exec";
 
 export const ContactSection = () => {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
+  const [form, setForm] = useState({ firstName: "", lastName: "", email: "", subject: "", message: "" });
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const scriptURL =
-      "https://script.google.com/macros/s/AKfycbyi1eZoWd53OjQrJsjMi0bAeXdj_8PojK2aJMXE3f7z3yYDoL9c8-zLp7IcYYcOgcFD9w/exec";
-
+    setStatus("sending");
     try {
-      const form = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        form.append(key, value);
-      });
-
-      await fetch(scriptURL, {
-        method: "POST",
-        body: form,
-      });
-
-      alert("✅ Message sent successfully!");
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        subject: "",
-        message: "",
-      });
-    } catch (error) {
-      alert("❌ Failed to send message. Try again.");
+      const fd = new FormData();
+      Object.entries(form).forEach(([k, v]) => fd.append(k, v));
+      await fetch(SCRIPT_URL, { method: "POST", body: fd });
+      setStatus("sent");
+      setForm({ firstName: "", lastName: "", email: "", subject: "", message: "" });
+      setTimeout(() => setStatus("idle"), 4000);
+    } catch {
+      setStatus("error");
+      setTimeout(() => setStatus("idle"), 3000);
     }
   };
 
-  const contactInfo = [
-    {
-      icon: Mail,
-      label: "Email",
-      value: "bashairfan0911@gmail.com",
-      link: "mailto:bashairfan0911@gmail.com",
-    },
-    {
-      icon: Phone,
-      label: "Phone",
-      value: "+91 8610164761",
-      link: "tel:+91 8610164761",
-    },
-    {
-      icon: MapPin,
-      label: "Location",
-      value: "Chennai, India",
-      link: "#",
-    },
-    {
-      icon: Linkedin,
-      label: "LinkedIn",
-      value: "linkedin.com/in/Irfan Basha",
-      link: "https://linkedin.com/in/irfanbasha518",
-    },
-    {
-      icon: Github,
-      label: "GitHub",
-      value: "github.com/Irfan Basha",
-      link: "https://github.com/bashairfan0911",
-    },
-  ];
+  const inputClass = "w-full bg-muted/40 border border-border/40 rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all duration-200 font-mono";
 
   return (
-    <section className="py-20 bg-card/20">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4">
-            <span className="text-gradient">Get In Touch</span>
+    <section id="contact" className="py-14 sm:py-20 relative overflow-hidden bg-background">
+      <div className="absolute inset-0 grid-overlay opacity-20 pointer-events-none" />
+
+      <div className="container mx-auto px-4 relative z-10">
+        {/* Heading */}
+        <div className="text-center mb-10 sm:mb-14">
+          <span className="text-xs font-mono text-green-400 uppercase tracking-[0.2em] mb-2 block">&gt;_ contact.sh</span>
+          <h2 className="text-2xl sm:text-4xl font-black mb-3">
+            <span className="text-gradient-vivid">Get In Touch</span>
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Ready to collaborate on innovative projects or discuss opportunities? Let's connect!
+          <p className="text-muted-foreground text-sm max-w-lg mx-auto">
+            Open to DevOps, Platform Engineering & Agentic AI opportunities
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
-          {/* Contact Information */}
-          <div className="space-y-6">
-            <h3 className="text-2xl font-semibold mb-6 text-card-foreground">
-              Contact Information
-            </h3>
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-10 items-start">
 
-            {contactInfo.map((contact, index) => {
-              const IconComponent = contact.icon;
-              return (
-                <Card
-                  key={contact.label}
-                  className="card-gradient border-border/50 p-6 hover:scale-[1.02] transition-all duration-300 animate-fade-in group cursor-pointer"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                  onClick={() => window.open(contact.link, "_blank")}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                      <IconComponent className="w-6 h-6 text-primary" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-card-foreground">{contact.label}</h4>
-                      <p className="text-muted-foreground hover:text-primary transition-colors">
-                        {contact.value}
-                      </p>
-                    </div>
+          {/* ── Left: socials ── */}
+          <div className="space-y-3">
+            <p className="text-[10px] uppercase tracking-widest font-mono text-muted-foreground mb-4">Connect with me</p>
+            {socials.map(({ icon: Icon, label, href, value, color }) => (
+              <TiltCard key={label}>
+                <a href={href} target={href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer"
+                  className="flex items-center gap-4 glass-card rounded-xl border border-border/30 p-4 hover:border-border/60 transition-all duration-300 group">
+                  <div className="p-2.5 rounded-xl flex-shrink-0" style={{ background: `${color}15` }}>
+                    <Icon className="w-5 h-5" style={{ color }} />
                   </div>
-                </Card>
-              );
-            })}
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">{label}</p>
+                    <p className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">{value}</p>
+                  </div>
+                </a>
+              </TiltCard>
+            ))}
 
-            {/* Status indicator */}
-            <Card className="card-gradient border-border/50 p-6 border-l-4 border-l-success">
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 bg-success rounded-full animate-pulse"></div>
-                <div>
-                  <h4 className="font-medium text-success">Available for Work</h4>
-                  <p className="text-muted-foreground text-sm">
-                    Open to new opportunities and freelance projects
-                  </p>
-                </div>
-              </div>
-            </Card>
+            {/* Availability badge */}
+            <div className="flex items-center gap-2 px-4 py-3 rounded-xl border border-green-400/20 bg-green-400/5 mt-2">
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse flex-shrink-0" />
+              <span className="text-xs font-mono text-green-400">Available for full-time opportunities</span>
+            </div>
           </div>
 
-          {/* Contact Form */}
-          <Card className="card-gradient border-border/50 p-8">
-            <h3 className="text-2xl font-semibold mb-6 text-card-foreground">
-              Send a Message
-            </h3>
+          {/* ── Right: form ── */}
+          <TiltCard>
+            <div className="glass-card rounded-2xl border border-border/30 overflow-hidden">
+              {/* Terminal bar */}
+              <div className="flex items-center gap-2 px-4 py-2.5 bg-muted/30 border-b border-border/30">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
+                <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
+                <span className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
+                <Terminal className="w-3.5 h-3.5 text-muted-foreground ml-2" />
+                <span className="text-xs font-mono text-muted-foreground">send_message.sh</span>
+              </div>
 
-            <form className="space-y-6" onSubmit={handleSubmit}>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-card-foreground mb-2 block">
-                    First Name
-                  </label>
-                  <Input
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    placeholder="Irfan"
-                    className="bg-input border-border/50 focus:border-primary transition-colors"
-                  />
+              <form onSubmit={onSubmit} className="p-5 sm:p-6 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <input name="firstName" value={form.firstName} onChange={onChange} placeholder="First name" required className={inputClass} />
+                  <input name="lastName"  value={form.lastName}  onChange={onChange} placeholder="Last name"  required className={inputClass} />
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-card-foreground mb-2 block">
-                    Last Name
-                  </label>
-                  <Input
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    placeholder="Basha"
-                    className="bg-input border-border/50 focus:border-primary transition-colors"
-                  />
-                </div>
-              </div>
+                <input name="email"   value={form.email}   onChange={onChange} type="email" placeholder="Email address" required className={inputClass} />
+                <input name="subject" value={form.subject} onChange={onChange} placeholder="Subject"       required className={inputClass} />
+                <textarea name="message" value={form.message} onChange={onChange} placeholder="Your message…" required rows={5}
+                  className={`${inputClass} resize-none`} />
 
-              <div>
-                <label className="text-sm font-medium text-card-foreground mb-2 block">
-                  Email
-                </label>
-                <Input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="bashairfan0911@gmail.com"
-                  className="bg-input border-border/50 focus:border-primary transition-colors"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-card-foreground mb-2 block">
-                  Subject
-                </label>
-                <Input
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  placeholder="Project Inquiry"
-                  className="bg-input border-border/50 focus:border-primary transition-colors"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-card-foreground mb-2 block">
-                  Message
-                </label>
-                <Textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  placeholder="Tell me about your project or opportunity..."
-                  className="bg-input border-border/50 focus:border-primary transition-colors min-h-[120px] resize-none"
-                />
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground glow-effect transition-all duration-300 hover:scale-[1.02]"
-                size="lg"
-              >
-                <Send className="mr-2 h-5 w-5" />
-                Send Message
-              </Button>
-            </form>
-          </Card>
+                <button type="submit" disabled={status === "sending" || status === "sent"}
+                  className="w-full py-3 rounded-xl font-mono font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] disabled:opacity-70 shadow-neon-blue"
+                  style={{ background: "linear-gradient(135deg,hsl(195 100% 55%),hsl(148 100% 50%))", color: "#020810" }}>
+                  {status === "sending" && <><span className="animate-spin border-2 border-current border-t-transparent rounded-full w-4 h-4" /> Sending…</>}
+                  {status === "sent"    && <><CheckCircle className="w-4 h-4" /> Message sent!</>}
+                  {status === "error"   && <>Failed — try again</>}
+                  {status === "idle"    && <><Send className="w-4 h-4" /> Send Message</>}
+                </button>
+              </form>
+            </div>
+          </TiltCard>
         </div>
       </div>
     </section>

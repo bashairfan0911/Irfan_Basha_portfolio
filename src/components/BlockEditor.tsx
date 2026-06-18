@@ -30,6 +30,14 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
+  Strikethrough,
+  Superscript,
+  Subscript,
+  Indent,
+  Outdent,
+  Palette,
+  Eraser,
+  Table,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -125,8 +133,12 @@ interface RichTextEditorProps {
 
 function RichTextEditor({ initialValue, onChange, editorKey }: RichTextEditorProps) {
   const ref = useRef<HTMLDivElement>(null);
-  // Track what key we last initialized for, so we only reset when the block identity changes
   const lastKeyRef = useRef<string>("");
+  // Table picker state
+  const [showTablePicker, setShowTablePicker] = useState(false);
+  const [tableHover, setTableHover] = useState({ r: 0, c: 0 });
+  // Save selection before toolbar button steals focus
+  const savedRange = useRef<Range | null>(null);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -157,9 +169,84 @@ function RichTextEditor({ initialValue, onChange, editorKey }: RichTextEditorPro
         case "b": e.preventDefault(); exec("bold"); break;
         case "i": e.preventDefault(); exec("italic"); break;
         case "u": e.preventDefault(); exec("underline"); break;
+        case "s": if (e.shiftKey) { e.preventDefault(); exec("strikeThrough"); } break;
       }
     }
   }, [exec]);
+
+  const insertLink = useCallback(() => {
+    const url = prompt("Enter URL:", "https://");
+    if (url) exec("createLink", url);
+  }, [exec]);
+
+  // Restore saved selection then injext HTML at that cursor position
+  const insertHtmlAtCursor = useCallback((html: string) => {
+    const sel = window.getSelection();
+    let range = savedRange.current;
+    if (!range && sel && sel.rangeCount > 0) range = sel.getRangeAt(0);
+    if (range) {
+      sel?.removeAllRanges();
+      sel?.addRange(range);
+      range.deleteContents();
+      const div = document.createElement("div");
+      div.innerHTML = html;
+      const frag = document.createDocumentFragment();
+      let lastNode: Node | null = null;
+      while (div.firstChild) { lastNode = div.firstChild; frag.appendChild(div.firstChild); }
+      range.insertNode(frag);
+      if (lastNode) {
+        const after = range.cloneRange();
+        after.setStartAfter(lastNode);
+        after.collapse(true);
+        sel?.removeAllRanges();
+        sel?.addRange(after);
+      }
+    } else {
+      // Fallback: append to editor
+      if (ref.current) ref.current.innerHTML += html;
+    }
+    if (ref.current) onChange(ref.current.innerHTML);
+    savedRange.current = null;
+  }, [onChange]);
+
+  // Restore selection then run execCommand — used by color and eraser
+  const restoreAndExec = useCallback((cmd: string, val?: string) => {
+    const sel = window.getSelection();
+    if (savedRange.current) {
+      ref.current?.focus();
+      sel?.removeAllRanges();
+      sel?.addRange(savedRange.current);
+    } else {
+      ref.current?.focus();
+    }
+    document.execCommand(cmd, false, val ?? "");
+    if (ref.current) onChange(ref.current.innerHTML);
+    savedRange.current = null;
+  }, [onChange]);
+
+  const doInsertTable = useCallback((rows: number, cols: number) => {
+    setShowTablePicker(false);
+    const thCells = Array.from({ length: cols }, (_, i) =>
+      `<th style="border:1px solid #d1d5db;padding:6px 10px;background:#f3f4f6;font-weight:600;text-align:left">Header ${i + 1}</th>`
+    ).join("");
+    const tdCells = Array.from({ length: cols }, () =>
+      `<td style="border:1px solid #d1d5db;padding:6px 10px">&nbsp;</td>`
+    ).join("");
+    const bodyRows = Array.from({ length: rows }, () => `<tr>${tdCells}</tr>`).join("");
+    const html = `<table style="border-collapse:collapse;width:100%;margin:1rem 0"><thead><tr>${thCells}</tr></thead><tbody>${bodyRows}</tbody></table><p><br></p>`;
+    // Restore cursor then use execCommand — browser handles block-level insertion correctly
+    const sel = window.getSelection();
+    if (savedRange.current) {
+      ref.current?.focus();
+      sel?.removeAllRanges();
+      sel?.addRange(savedRange.current);
+      savedRange.current = null;
+    } else {
+      ref.current?.focus();
+    }
+    document.execCommand("insertHTML", false, html);
+    if (ref.current) onChange(ref.current.innerHTML);
+  }, [onChange]);
 
   return (
     <div className="border border-border/50 rounded-xl overflow-hidden bg-card shadow-sm">
@@ -231,15 +318,210 @@ function RichTextEditor({ initialValue, onChange, editorKey }: RichTextEditorPro
         <ToolbarBtn title="Horizontal rule" onClick={() => exec("insertHorizontalRule")}>
           <Minus className="h-3.5 w-3.5" />
         </ToolbarBtn>
+
+        <Sep />
+
+        {/* Strikethrough, Superscript, Subscript */}
+        <ToolbarBtn title="Strikethrough  (Ctrl+Shift+S)" onClick={() => exec("strikeThrough")}>
+          <Strikethrough className="h-3.5 w-3.5" />
+        </ToolbarBtn>
+        <ToolbarBtn title="Superscript" onClick={() => exec("superscript")}>
+          <Superscript className="h-3.5 w-3.5" />
+        </ToolbarBtn>
+        <ToolbarBtn title="Subscript" onClick={() => exec("subscript")}>
+          <Subscript className="h-3.5 w-3.5" />
+        </ToolbarBtn>
+
+        <Sep />
+
+        {/* Indent / Outdent */}
+        <ToolbarBtn title="Increase indent" onClick={() => exec("indent")}>
+          <Indent className="h-3.5 w-3.5" />
+        </ToolbarBtn>
+        <ToolbarBtn title="Decrease indent" onClick={() => exec("outdent")}>
+          <Outdent className="h-3.5 w-3.5" />
+        </ToolbarBtn>
+
+        <Sep />
+
+        {/* Insert Link */}
+        <ToolbarBtn title="Insert link (Ctrl+K)" onClick={insertLink}>
+          <LinkIcon className="h-3.5 w-3.5" />
+        </ToolbarBtn>
+
+        {/* Insert Table — grid picker */}
+        <div className="relative">
+          <ToolbarBtn
+            title="Insert table"
+            onClick={() => {
+              // Save cursor before focus leaves editor
+              const sel = window.getSelection();
+              if (sel && sel.rangeCount > 0) savedRange.current = sel.getRangeAt(0).cloneRange();
+              setShowTablePicker((v) => !v);
+            }}
+          >
+            <Table className="h-3.5 w-3.5" />
+          </ToolbarBtn>
+          {showTablePicker && (
+            <div
+              className="absolute left-0 top-8 z-50 bg-card border border-border/60 rounded-xl shadow-xl p-3"
+              onMouseLeave={() => setTableHover({ r: 0, c: 0 })}
+            >
+              <p className="text-[10px] font-mono text-muted-foreground mb-2 text-center">
+                {tableHover.r > 0 && tableHover.c > 0
+                  ? `${tableHover.r} × ${tableHover.c} table`
+                  : "Hover to pick size"}
+              </p>
+              <div className="grid gap-0.5" style={{ gridTemplateColumns: "repeat(6, 1fr)" }}>
+                {Array.from({ length: 6 }, (_, ri) =>
+                  Array.from({ length: 6 }, (_, ci) => (
+                    <div
+                      key={`${ri}-${ci}`}
+                      onMouseEnter={() => setTableHover({ r: ri + 1, c: ci + 1 })}
+                      onClick={() => doInsertTable(ri + 1, ci + 1)}
+                      className={`w-5 h-5 rounded-sm border cursor-pointer transition-colors ${
+                        ri < tableHover.r && ci < tableHover.c
+                          ? "bg-primary/70 border-primary"
+                          : "bg-muted/30 border-border/40 hover:bg-muted/60"
+                      }`}
+                    />
+                  ))
+                )}
+              </div>
+              <button
+                onClick={() => setShowTablePicker(false)}
+                className="mt-2 w-full text-[10px] text-muted-foreground hover:text-foreground transition-colors text-center"
+              >Cancel</button>
+            </div>
+          )}
+        </div>
+
+        <Sep />
+
+        {/* Font colour — save range on mousedown, restore before applying */}
+        <label
+          title="Font color"
+          className="h-7 w-7 flex items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground transition-colors flex-shrink-0 cursor-pointer"
+          onMouseDown={() => {
+            // Save selection NOW before OS color dialog opens and steals focus
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0) savedRange.current = sel.getRangeAt(0).cloneRange();
+          }}
+        >
+          <Palette className="h-3.5 w-3.5" />
+          <input
+            type="color"
+            defaultValue="#e11d48"
+            className="sr-only"
+            onChange={(e) => restoreAndExec("foreColor", e.target.value)}
+          />
+        </label>
+
+        {/* Remove formatting — restores selection then strips format */}
+        <ToolbarBtn title="Remove formatting (select text first)" onClick={() => restoreAndExec("removeFormat")}>
+          <Eraser className="h-3.5 w-3.5" />
+        </ToolbarBtn>
       </div>
 
       {/* ── Editable area ── */}
+      {/* Scoped style: heading sizes match BlogPost prose-h1/h2/h3 exactly */}
+      <style>{`
+        .rich-editor h1 {
+          font-size: 1.5rem; /* prose-h1: text-2xl */
+          font-weight: 700;
+          line-height: 1.25;
+          margin-top: 1.5rem;
+          margin-bottom: 0.75rem;
+          padding-bottom: 0.4rem;
+          border-bottom: 1px solid hsl(var(--border) / 0.4);
+          color: hsl(var(--foreground));
+        }
+        @media (min-width: 640px) {
+          .rich-editor h1 { font-size: 1.875rem; } /* sm:prose-h1: text-3xl */
+        }
+        .rich-editor h2 {
+          font-size: 1.25rem; /* prose-h2: text-xl */
+          font-weight: 700;
+          line-height: 1.3;
+          margin-top: 1.25rem;
+          margin-bottom: 0.5rem;
+          padding-bottom: 0.25rem;
+          border-bottom: 1px solid hsl(var(--border) / 0.3);
+          color: hsl(var(--foreground));
+        }
+        @media (min-width: 640px) {
+          .rich-editor h2 { font-size: 1.5rem; } /* sm:prose-h2: text-2xl */
+        }
+        .rich-editor h3 {
+          font-size: 1.125rem; /* prose-h3: text-lg */
+          font-weight: 600;
+          line-height: 1.4;
+          margin-top: 1rem;
+          margin-bottom: 0.4rem;
+          color: hsl(var(--foreground));
+        }
+        @media (min-width: 640px) {
+          .rich-editor h3 { font-size: 1.25rem; } /* sm:prose-h3: text-xl */
+        }
+        .rich-editor h4 { font-size: 1rem; font-weight: 600; margin-top: 0.75rem; margin-bottom: 0.25rem; }
+        .rich-editor p  { margin-top: 0; margin-bottom: 0.75rem; line-height: 1.75; }
+        .rich-editor ul, .rich-editor ol { margin: 0.5rem 0 1rem; padding-left: 1.5rem; }
+        .rich-editor li { margin: 0.25rem 0; line-height: 1.65; }
+        .rich-editor blockquote {
+          border-left: 3px solid hsl(var(--primary));
+          background: hsl(var(--muted) / 0.3);
+          padding: 0.25rem 1rem;
+          border-radius: 0 0.5rem 0.5rem 0;
+          margin: 1rem 0;
+          color: hsl(var(--foreground) / 0.8);
+        }
+        .rich-editor strong { font-weight: 600; }
+        .rich-editor code {
+          font-family: ui-monospace, monospace;
+          font-size: 0.82em;
+          padding: 0.1em 0.35em;
+          background: hsl(var(--muted) / 0.7);
+          border-radius: 0.25rem;
+          color: hsl(var(--primary));
+          white-space: pre-wrap;
+          word-break: break-all;
+        }
+        .rich-editor pre {
+          font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+          font-size: 0.82em;
+          line-height: 1.55;
+          background: hsl(var(--muted) / 0.5);
+          border: 1px solid hsl(var(--border) / 0.4);
+          border-radius: 0.5rem;
+          padding: 0.85rem 1rem;
+          margin: 0.75rem 0 1rem;
+          overflow-x: auto;          /* scroll instead of wrap */
+          white-space: pre;           /* never wrap inside pre */
+          word-break: normal;         /* keep words intact */
+          overflow-wrap: normal;
+        }
+        .rich-editor pre code {
+          background: none;
+          border: none;
+          padding: 0;
+          font-size: 1em;
+          color: hsl(var(--foreground) / 0.9);
+          white-space: pre;           /* inherit pre nowrap */
+          word-break: normal;
+          overflow-wrap: normal;
+        }
+      `}</style>
       <div
         ref={ref}
         contentEditable
         suppressContentEditableWarning
         onInput={handleInput}
         onKeyDown={handleKeyDown}
+        onMouseUp={() => {
+          // Save selection so table picker can restore it after focus leaves
+          const sel = window.getSelection();
+          if (sel && sel.rangeCount > 0) savedRange.current = sel.getRangeAt(0).cloneRange();
+        }}
         data-placeholder="Start writing here…  Use the toolbar above for headings, bold, alignment, lists, and more. Ctrl+B / Ctrl+I / Ctrl+U shortcuts work too."
         className="rich-editor min-h-[220px] p-4 text-sm text-foreground focus:outline-none"
       />
@@ -247,22 +529,171 @@ function RichTextEditor({ initialValue, onChange, editorKey }: RichTextEditorPro
   );
 }
 
+// ─── GitHub markdown CSS (embedded in iframe — immune to dark theme) ──────────
+
+const GITHUB_MD_CSS = `
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  font-size: 16px;
+  line-height: 1.5;
+  color: #24292f;
+  background-color: #ffffff;
+  padding: 24px 32px 32px;
+  margin: 0;
+  word-wrap: break-word;
+}
+a { color: #0969da; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Headings — absolute px sizes so they are ALWAYS visually bigger than body text ── */
+h1 {
+  font-size: 36px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  color: #24292f !important;
+  margin-top: 0 !important;
+  margin-bottom: 16px !important;
+  padding-bottom: 10px !important;
+  border-bottom: 2px solid #d0d7de !important;
+}
+h2 {
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  line-height: 1.25 !important;
+  color: #24292f !important;
+  margin-top: 28px !important;
+  margin-bottom: 14px !important;
+  padding-bottom: 8px !important;
+  border-bottom: 1px solid #d0d7de !important;
+}
+h3 {
+  font-size: 22px !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+  color: #24292f !important;
+  margin-top: 24px !important;
+  margin-bottom: 12px !important;
+}
+h4 {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: #24292f !important;
+  margin-top: 20px !important;
+  margin-bottom: 10px !important;
+}
+h5 {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #24292f !important;
+  margin-top: 16px !important;
+  margin-bottom: 8px !important;
+}
+h6 {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #57606a !important;
+  margin-top: 16px !important;
+  margin-bottom: 8px !important;
+}
+
+p  { margin-top: 0; margin-bottom: 16px; }
+ul, ol { margin-top: 0; margin-bottom: 16px; padding-left: 2em; }
+ul ul, ul ol, ol ol, ol ul { margin-top: 0; margin-bottom: 0; }
+li { margin-top: .25em; }
+li + li { margin-top: .25em; }
+li > p { margin-top: 16px; }
+blockquote {
+  margin: 0 0 16px 0; padding: 0 1em;
+  color: #57606a;
+  border-left: .25em solid #d0d7de;
+  background: transparent;
+}
+blockquote > :first-child { margin-top: 0; }
+blockquote > :last-child  { margin-bottom: 0; }
+hr { height: 0; margin: 24px 0; border: 0; border-top: 2px solid #d0d7de; }
+pre {
+  margin-top: 0; margin-bottom: 16px;
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%; line-height: 1.45;
+  background-color: #f6f8fa;
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+pre code {
+  display: inline; padding: 0; margin: 0;
+  overflow: visible; line-height: inherit;
+  background: transparent; border: 0;
+  font-size: 100%; border-radius: 0; color: #24292f;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 85%;
+  padding: .2em .4em;
+  background: rgba(175,184,193,.2);
+  border-radius: 6px;
+  color: #24292f;
+}
+table {
+  border-spacing: 0; border-collapse: collapse;
+  display: block; width: max-content; max-width: 100%;
+  overflow: auto; margin-bottom: 16px;
+}
+th, td { padding: 6px 13px; border: 1px solid #d0d7de; }
+th { font-weight: 600; background: #f6f8fa; }
+tr { background: #fff; border-top: 1px solid #d8dee4; }
+tr:nth-child(2n) { background: #f6f8fa; }
+img { max-width: 100%; border-radius: 6px; vertical-align: middle; }
+strong { font-weight: 600; color: #24292f; }
+kbd {
+  display: inline-block; padding: 3px 5px;
+  font-size: 11px; line-height: 10px; color: #24292f;
+  background: #f6f8fa; border: 1px solid rgba(175,184,193,.2);
+  border-radius: 6px; box-shadow: inset 0 -1px 0 rgba(175,184,193,.2);
+}
+details { display: block; }
+summary { display: list-item; cursor: pointer; }
+`;
+
 // ─── Markdown Upload Panel ─────────────────────────────────────────────
+
 
 function MarkdownUploadPanel({ onParsed }: { onParsed: (blocks: ContentBlock[]) => void }) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const [preview, setPreview] = useState("");
   const [fileName, setFileName] = useState("");
   const [fileSize, setFileSize] = useState("");
   const [lineCount, setLineCount] = useState(0);
   const [dragging, setDragging] = useState(false);
+  const [iframeHeight, setIframeHeight] = useState(400);
+
+  // Build a fully self-contained HTML document for the iframe
+  const srcDoc = preview
+    ? `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>${GITHUB_MD_CSS}</style></head><body>${preview}</body></html>`
+    : "";
+
+  // Auto-resize iframe to fit content after it loads
+  const handleIframeLoad = () => {
+    const measureHeight = () => {
+      try {
+        const body = iframeRef.current?.contentDocument?.body;
+        if (body) {
+          const h = body.scrollHeight;
+          // If height is 0, content hasn't painted yet — retry on next frame
+          if (h > 0) {
+            setIframeHeight(h + 40);
+          } else {
+            requestAnimationFrame(measureHeight);
+          }
+        }
+      } catch { /* cross-origin — won't happen with srcdoc */ }
+    };
+    requestAnimationFrame(measureHeight);
+  };
 
   const processFile = async (file: File) => {
-    const name = file.name.toLowerCase();
-    if (!name.endsWith(".md") && !name.endsWith(".markdown")) {
-      toast.error("Please upload a .md or .markdown file");
-      return;
-    }
     const text = await readFileAsText(file);
     setFileName(file.name);
     setFileSize(file.size < 1024 ? `${file.size} B` : `${(file.size / 1024).toFixed(1)} KB`);
@@ -276,7 +707,7 @@ function MarkdownUploadPanel({ onParsed }: { onParsed: (blocks: ContentBlock[]) 
   };
 
   const reset = () => {
-    setPreview(""); setFileName(""); setFileSize(""); setLineCount(0);
+    setPreview(""); setFileName(""); setFileSize(""); setLineCount(0); setIframeHeight(400);
     if (fileRef.current) fileRef.current.value = "";
   };
 
@@ -304,7 +735,7 @@ function MarkdownUploadPanel({ onParsed }: { onParsed: (blocks: ContentBlock[]) 
           className={`group cursor-pointer border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200
             ${dragging ? "border-primary bg-primary/10" : "border-border/50 hover:border-primary/50 hover:bg-muted/10"}`}
         >
-          <input ref={fileRef} type="file" accept=".md,.markdown" className="hidden" onChange={handleChange} />
+          <input ref={fileRef} type="file" className="hidden" onChange={handleChange} />
           <div className="flex flex-col items-center gap-3">
             <div className={`h-16 w-16 rounded-2xl flex items-center justify-center transition-all duration-200
               ${dragging ? "bg-primary/20 scale-110" : "bg-muted/60 group-hover:bg-primary/10 group-hover:scale-105"}`}>
@@ -312,11 +743,11 @@ function MarkdownUploadPanel({ onParsed }: { onParsed: (blocks: ContentBlock[]) 
             </div>
             <div>
               <p className="font-semibold text-sm text-foreground">
-                {dragging ? "Drop to import!" : "Drop your Markdown file here"}
+                {dragging ? "Drop to import!" : "Drop your file here"}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                Supports <code className="text-primary text-xs">.md</code> &amp; <code className="text-primary text-xs">.markdown</code>
-                {" · "} All formatting preserved
+                Any text file (.md, .txt, .markdown, etc.)
+                {" · "} Rendered as GitHub Markdown preview
               </p>
             </div>
             <Button type="button" variant="outline" size="sm" className="gap-2 text-xs pointer-events-none mt-1">
@@ -326,7 +757,7 @@ function MarkdownUploadPanel({ onParsed }: { onParsed: (blocks: ContentBlock[]) 
         </div>
       )}
 
-      {/* GitHub-style file preview */}
+      {/* GitHub-style file preview using isolated iframe */}
       {preview && (
         <div className="border border-border/50 rounded-xl overflow-hidden shadow-sm">
           {/* File header bar */}
@@ -348,9 +779,11 @@ function MarkdownUploadPanel({ onParsed }: { onParsed: (blocks: ContentBlock[]) 
             </button>
           </div>
 
-          {/* Second bar: action */}
+          {/* Action bar */}
           <div className="flex items-center gap-2 px-3 py-2 bg-muted/20 border-b border-border/30">
-            <span className="text-xs text-muted-foreground flex-1">Preview — rendered exactly as it will appear in the blog post</span>
+            <span className="text-xs text-muted-foreground flex-1">
+              Preview — GitHub-accurate rendering
+            </span>
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
@@ -358,33 +791,30 @@ function MarkdownUploadPanel({ onParsed }: { onParsed: (blocks: ContentBlock[]) 
             >
               Change file
             </button>
-            <input ref={fileRef} type="file" accept=".md,.markdown" className="hidden" onChange={handleChange} />
+            <input ref={fileRef} type="file" className="hidden" onChange={handleChange} />
           </div>
 
-          {/* Rendered markdown body */}
-          <div
-            className="px-6 py-5 sm:px-8 sm:py-6
-              prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none
-              prose-headings:text-foreground prose-headings:font-bold prose-headings:border-b prose-headings:border-border/30 prose-headings:pb-1
-              prose-p:text-foreground/85 prose-p:leading-7
-              prose-strong:text-foreground prose-strong:font-semibold
-              prose-em:text-foreground/80
-              prose-code:text-primary prose-code:bg-muted/60 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-code:font-mono
-              prose-pre:bg-muted/80 prose-pre:border prose-pre:border-border/40 prose-pre:rounded-lg prose-pre:overflow-x-auto
-              prose-a:text-primary prose-a:underline-offset-2
-              prose-blockquote:border-l-4 prose-blockquote:border-primary/60 prose-blockquote:bg-muted/20 prose-blockquote:py-0.5 prose-blockquote:not-italic
-              prose-ul:text-foreground/80 prose-ol:text-foreground/80
-              prose-li:marker:text-primary
-              prose-table:border-collapse prose-th:bg-muted/40 prose-th:border prose-th:border-border/40 prose-th:px-3 prose-th:py-1.5
-              prose-td:border prose-td:border-border/30 prose-td:px-3 prose-td:py-1.5
-              prose-hr:border-border/40"
-            dangerouslySetInnerHTML={{ __html: preview }}
+          {/* ── Isolated iframe preview ── */}
+          <iframe
+            ref={iframeRef}
+            srcDoc={srcDoc}
+            onLoad={handleIframeLoad}
+            title="Markdown Preview"
+            style={{
+              width: "100%",
+              height: `${Math.max(iframeHeight, 300)}px`,
+              border: "none",
+              display: "block",
+              backgroundColor: "#ffffff",
+            }}
+            sandbox="allow-same-origin"
           />
         </div>
       )}
     </div>
   );
 }
+
 
 // ─── Main BlockEditor ─────────────────────────────────────────────────────────
 
@@ -440,8 +870,8 @@ export default function BlockEditor({ blocks, onChange }: Props) {
 
   const handleMarkdownParsed = (newBlocks: ContentBlock[]) => {
     onChange(newBlocks);
-    // Switch to write mode so user sees the imported content
-    setEditorMode("write");
+    // Defer mode switch one frame so React renders the new blocks before unmounting the panel
+    requestAnimationFrame(() => setEditorMode("write"));
   };
 
   return (

@@ -34,7 +34,7 @@ export default async function handler(req, res) {
     const db = client.db(dbName);
     const collection = db.collection(collectionName);
 
-    const posts = await collection.find({}).sort({ date: -1 }).toArray();
+    const posts = await collection.find({ hidden: { $ne: true } }).sort({ date: -1 }).toArray();
 
     const transformedPosts = posts.map((post) => ({
       ...post,

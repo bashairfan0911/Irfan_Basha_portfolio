@@ -57,7 +57,7 @@ function localApiPlugin() {
             const posts = await client
               .db(process.env.MONGODB_DATABASE || "portfolio")
               .collection(process.env.MONGODB_COLLECTION || "blogPosts")
-              .find({}).sort({ createdAt: -1 }).toArray();
+              .find({ hidden: { $ne: true } }).sort({ createdAt: -1 }).toArray();
             await client.close();
             return sendJSON(200, {
               posts: posts.map((p: Record<string, unknown>) => ({ ...p, _id: String(p._id) })),
@@ -85,6 +85,15 @@ function localApiPlugin() {
             const col = client
               .db(process.env.MONGODB_DATABASE || "portfolio")
               .collection(process.env.MONGODB_COLLECTION || "blogPosts");
+
+            if (method === "GET") {
+              const all = await col.find({}).sort({ createdAt: -1 }).toArray();
+              await client.close();
+              return sendJSON(200, {
+                posts: all.map((p: Record<string, unknown>) => ({ ...p, _id: String(p._id) })),
+              });
+            }
+
             const body = await readBody();
 
             if (method === "POST") {
@@ -97,6 +106,15 @@ function localApiPlugin() {
               const { id, ...update } = body as { id: string; [k: string]: unknown };
               update.updatedAt = new Date().toISOString();
               await col.updateOne({ _id: new ObjectId(id) }, { $set: update });
+              await client.close();
+              return sendJSON(200, { success: true });
+            }
+            if (method === "PATCH") {
+              const { id, hidden } = body as { id: string; hidden: boolean };
+              await col.updateOne(
+                { _id: new ObjectId(id) },
+                { $set: { hidden: !!hidden, updatedAt: new Date().toISOString() } }
+              );
               await client.close();
               return sendJSON(200, { success: true });
             }
