@@ -1,8 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, ExternalLink, Github, Calendar, Users, Target, FileText, BookOpen } from "lucide-react";
+import { ArrowLeft, ExternalLink, Github, Calendar, Users, Target, FileText, BookOpen, CheckCircle2, Zap, ChevronDown, ChevronUp } from "lucide-react";
+import { useState } from "react";
 
 const projectsData = {
   1: {
@@ -337,215 +335,219 @@ const projectsData = {
   }
 };
 
+// ─── colour map keyed by project status ───────────────────────────────────────
+const STATUS_STYLE: Record<string, { text: string; border: string; bg: string }> = {
+  Live:     { text: "text-green-400",  border: "border-green-400/40",  bg: "bg-green-400/10"  },
+  Complete: { text: "text-primary",    border: "border-primary/40",    bg: "bg-primary/10"    },
+};
+
+// accent colour per project id
+const ACCENT: Record<number, string> = {
+  1: "#06b6d4", 2: "#f59e0b", 3: "#00d4ff",
+  4: "#f59e0b", 5: "#a855f7", 6: "#0078d4", 7: "#22c55e", 8: "#00ff88",
+};
+
 export const ProjectDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
-  const projectId = parseInt(id || '0');
+  const [openSection, setOpenSection] = useState<string | null>("overview");
+
+  const projectId = parseInt(id || "0");
   const project = projectsData[projectId as keyof typeof projectsData];
-  
+  const color = ACCENT[projectId] ?? "#00d4ff";
+  const p = project as typeof project & { notesLink?: string; interviewNotesLink?: string };
+
   if (!project || !id || isNaN(projectId)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-foreground mb-4">Project Not Found</h1>
-          <p className="text-muted-foreground mb-8">The project you're looking for doesn't exist.</p>
-          <Button onClick={() => navigate('/')}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Portfolio
-          </Button>
+          <p className="font-mono text-xs text-muted-foreground mb-3">&gt;_ project not found</p>
+          <h1 className="text-3xl font-black text-foreground mb-4">404</h1>
+          <button onClick={() => navigate("/")}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-mono border border-border/50 hover:border-primary/50 hover:text-primary transition-all">
+            <ArrowLeft className="h-4 w-4" /> Back to Portfolio
+          </button>
         </div>
       </div>
     );
   }
 
+  const status = STATUS_STYLE[project.status] ?? STATUS_STYLE.Complete;
+
+  const Section = ({ id: sid, label, icon: Icon, children }: { id: string; label: string; icon: React.ElementType; children: React.ReactNode }) => {
+    const open = openSection === sid;
+    return (
+      <div className="glass-card rounded-2xl border border-border/30 overflow-hidden">
+        <button
+          onClick={() => setOpenSection(open ? null : sid)}
+          className="w-full flex items-center justify-between gap-3 px-5 py-3.5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors"
+        >
+          <div className="flex items-center gap-2.5">
+            <Icon className="w-3.5 h-3.5" style={{ color }} />
+            <span className="text-xs font-mono font-bold uppercase tracking-widest text-foreground/80">{label}</span>
+          </div>
+          {open ? <ChevronUp className="w-3.5 h-3.5 text-muted-foreground" /> : <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />}
+        </button>
+        {open && <div className="px-5 pb-5 pt-2 border-t border-border/20">{children}</div>}
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border/50 bg-card/20 backdrop-blur">
-        <div className="container mx-auto px-4 py-6">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/')}
-            className="mb-4 hover:bg-primary/10"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Portfolio
-          </Button>
-          <div className="flex items-center gap-4 mb-2">
-            <h1 className="text-3xl font-bold text-gradient">{project.title}</h1>
-            <Badge variant="outline" className="bg-success/10 text-success border-success/30">
-              {project.status}
-            </Badge>
-          </div>
-          <p className="text-xl text-muted-foreground">{project.description}</p>
+      {/* ── Fixed top bar ── */}
+      <div className="fixed top-0 left-0 right-0 z-40 h-14 bg-background/90 backdrop-blur-md border-b border-border/30 flex items-center">
+        <div className="w-16 flex-shrink-0" /> {/* hamburger clearance */}
+        <button onClick={() => navigate("/")}
+          className="inline-flex items-center gap-1.5 text-xs font-mono text-muted-foreground hover:text-foreground transition-colors">
+          <ArrowLeft className="h-3.5 w-3.5" /> Portfolio
+        </button>
+        <span className="ml-3 text-muted-foreground/40">·</span>
+        <span className="ml-3 text-xs font-mono text-muted-foreground truncate max-w-xs hidden sm:block">{project.title}</span>
+        <div className="ml-auto pr-4">
+          <span className={`text-[10px] font-mono px-2.5 py-0.5 rounded-full border ${status.text} ${status.border} ${status.bg}`}>
+            {project.status}
+          </span>
         </div>
-      </header>
+      </div>
+      <div className="h-14" /> {/* spacer */}
 
-      <main className="container mx-auto px-4 py-12">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Project Image */}
+      {/* ── Colour accent strip ── */}
+      <div className="h-1 w-full" style={{ background: `linear-gradient(90deg, ${color}, ${color}44)` }} />
+
+      {/* ── Hero ── */}
+      <div className="container mx-auto px-4 pt-8 pb-4 max-w-5xl">
+        <p className="text-[10px] font-mono uppercase tracking-[0.2em] mb-2" style={{ color }}>
+          &gt;_ project/{id}
+        </p>
+        <h1 className="text-2xl sm:text-4xl font-black text-foreground mb-3 leading-tight">{project.title}</h1>
+        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-3xl">{project.description}</p>
+
+        {/* Meta row */}
+        <div className="flex flex-wrap gap-4 mt-5">
+          <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground">
+            <Calendar className="w-3.5 h-3.5" style={{ color }} />
+            <span>{project.duration}</span>
+          </div>
+          <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground">
+            <Users className="w-3.5 h-3.5" style={{ color }} />
+            <span>{project.role}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Main grid ── */}
+      <div className="container mx-auto px-4 pb-16 max-w-5xl">
+        <div className="grid lg:grid-cols-3 gap-5">
+
+          {/* Left: sections */}
+          <div className="lg:col-span-2 space-y-3">
+
+            {/* Image */}
             {project.image && (
-              <Card className="card-gradient border-border/50 overflow-hidden">
-                <img 
-                  src={project.image} 
-                  alt={project.title}
-                  className="w-full h-auto object-cover"
-                />
-              </Card>
+              <div className="rounded-2xl border border-border/30 overflow-hidden">
+                <img src={project.image} alt={project.title} className="w-full h-auto object-cover" />
+              </div>
             )}
 
-            {/* Project Overview */}
-            <Card className="card-gradient border-border/50 p-8">
-              <h2 className="text-2xl font-semibold mb-4 text-card-foreground">Project Overview</h2>
-              <p className="text-muted-foreground leading-relaxed">{project.longDescription}</p>
-            </Card>
+            {/* Overview */}
+            <Section id="overview" label="Overview" icon={FileText}>
+              <p className="text-sm text-muted-foreground leading-relaxed">{project.longDescription}</p>
+            </Section>
 
-            {/* Key Features */}
-            <Card className="card-gradient border-border/50 p-8">
-              <h2 className="text-2xl font-semibold mb-6 text-card-foreground">Key Features</h2>
-              <div className="grid md:grid-cols-2 gap-4">
-                {project.features.map((feature, index) => (
-                  <div key={index} className="flex items-start gap-3 p-4 bg-secondary/30 rounded-lg">
-                    <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                    <p className="text-sm text-card-foreground">{feature}</p>
+            {/* Features */}
+            <Section id="features" label="Key Features" icon={Zap}>
+              <div className="grid sm:grid-cols-2 gap-2">
+                {project.features.map((f, i) => (
+                  <div key={i} className="flex items-start gap-2.5 p-3 rounded-xl bg-white/[0.03] border border-border/20">
+                    <CheckCircle2 className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" style={{ color }} />
+                    <p className="text-xs text-muted-foreground leading-relaxed">{f}</p>
                   </div>
                 ))}
               </div>
-            </Card>
+            </Section>
 
-            {/* Challenges & Solutions */}
-            <Card className="card-gradient border-border/50 p-8">
-              <h2 className="text-2xl font-semibold mb-6 text-card-foreground">Challenges & Learning</h2>
-              <div className="space-y-4">
-                {project.challenges.map((challenge, index) => (
-                  <div key={index} className="flex items-start gap-3 p-4 bg-warning/10 rounded-lg border border-warning/20">
-                    <Target className="w-5 h-5 text-warning mt-0.5 flex-shrink-0" />
-                    <p className="text-sm text-card-foreground">{challenge}</p>
+            {/* Challenges */}
+            <Section id="challenges" label="Challenges & Learning" icon={Target}>
+              <div className="space-y-2">
+                {project.challenges.map((c, i) => (
+                  <div key={i} className="flex items-start gap-2.5 p-3 rounded-xl bg-amber-400/5 border border-amber-400/15">
+                    <Target className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-amber-400" />
+                    <p className="text-xs text-muted-foreground leading-relaxed">{c}</p>
                   </div>
                 ))}
               </div>
-            </Card>
+            </Section>
 
             {/* Outcomes */}
-            <Card className="card-gradient border-border/50 p-8">
-              <h2 className="text-2xl font-semibold mb-6 text-card-foreground">Results & Outcomes</h2>
-              <div className="space-y-4">
-                {project.outcomes.map((outcome, index) => (
-                  <div key={index} className="flex items-start gap-3 p-4 bg-success/10 rounded-lg border border-success/20">
-                    <div className="w-2 h-2 bg-success rounded-full mt-2 flex-shrink-0"></div>
-                    <p className="text-sm text-card-foreground">{outcome}</p>
+            <Section id="outcomes" label="Results & Outcomes" icon={CheckCircle2}>
+              <div className="space-y-2">
+                {project.outcomes.map((o, i) => (
+                  <div key={i} className="flex items-start gap-2.5 p-3 rounded-xl bg-green-400/5 border border-green-400/15">
+                    <CheckCircle2 className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-green-400" />
+                    <p className="text-xs text-muted-foreground leading-relaxed">{o}</p>
                   </div>
                 ))}
               </div>
-            </Card>
+            </Section>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Project Info */}
-            <Card className="card-gradient border-border/50 p-6">
-              <h3 className="text-lg font-semibold mb-4 text-card-foreground">Project Info</h3>
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <Calendar className="w-4 h-4 text-primary" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Duration</p>
-                    <p className="text-sm font-medium text-card-foreground">{project.duration}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Users className="w-4 h-4 text-primary" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Role</p>
-                    <p className="text-sm font-medium text-card-foreground">{project.role}</p>
-                  </div>
-                </div>
-              </div>
-            </Card>
+          {/* Right: sidebar */}
+          <div className="space-y-4">
 
-            {/* Technologies */}
-            <Card className="card-gradient border-border/50 p-6">
-              <h3 className="text-lg font-semibold mb-4 text-card-foreground">Technologies Used</h3>
-              <div className="flex flex-wrap gap-2">
-                {project.technologies.map((tech) => (
-                  <Badge key={tech} variant="secondary" className="text-xs">
-                    {tech}
-                  </Badge>
+            {/* Tech stack */}
+            <div className="glass-card rounded-2xl border border-border/30 p-4">
+              <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground/60 mb-3">Tech Stack</p>
+              <div className="flex flex-wrap gap-1.5">
+                {project.technologies.map((t) => (
+                  <span key={t}
+                    className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-border/40 text-muted-foreground bg-white/[0.03] hover:border-opacity-60 transition-colors">
+                    {t}
+                  </span>
                 ))}
               </div>
-            </Card>
+            </div>
 
-            {/* Action Buttons */}
-            <div className="space-y-3">
-              <Button
-                className="w-full bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={!project.demoLink}
-                asChild={!!project.demoLink}
-              >
-                {project.demoLink ? (
-                  <a href={project.demoLink} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    Live Demo
-                  </a>
-                ) : (
-                  <>
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    Live Demo
-                  </>
-                )}
-              </Button>
+            {/* Action buttons */}
+            <div className="glass-card rounded-2xl border border-border/30 p-4 space-y-2">
+              <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground/60 mb-3">Links</p>
 
-              <Button
-                variant="outline"
-                className="w-full border-primary/30 text-primary hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={!project.githubLink}
-                asChild={!!project.githubLink}
-              >
-                {project.githubLink ? (
-                  <a href={project.githubLink} target="_blank" rel="noopener noreferrer">
-                    <Github className="mr-2 h-4 w-4" />
-                    View Code
-                  </a>
-                ) : (
-                  <>
-                    <Github className="mr-2 h-4 w-4" />
-                    View Code
-                  </>
-                )}
-              </Button>
-
-              {project.notesLink && (
-                <Button
-                  variant="outline"
-                  className="w-full border-primary/30 text-primary hover:bg-primary/10"
-                  asChild
-                >
-                  <a href={project.notesLink} target="_blank" rel="noopener noreferrer">
-                    <FileText className="mr-2 h-4 w-4" />
-                    Project Notes
-                  </a>
-                </Button>
+              {project.demoLink ? (
+                <a href={project.demoLink} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-mono font-bold w-full transition-all hover:scale-[1.02]"
+                  style={{ background: `${color}18`, color, border: `1px solid ${color}40` }}>
+                  <ExternalLink className="w-3.5 h-3.5" /> Live Demo
+                </a>
+              ) : (
+                <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-mono w-full opacity-40 cursor-not-allowed border border-border/30 text-muted-foreground">
+                  <ExternalLink className="w-3.5 h-3.5" /> No Demo
+                </div>
               )}
 
-              {project.interviewNotesLink && (
-                <Button
-                  variant="outline"
-                  className="w-full border-primary/30 text-primary hover:bg-primary/10"
-                  asChild
-                >
-                  <a href={project.interviewNotesLink} target="_blank" rel="noopener noreferrer">
-                    <BookOpen className="mr-2 h-4 w-4" />
-                    Interview Notes
-                  </a>
-                </Button>
+              {project.githubLink && (
+                <a href={project.githubLink} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-mono font-bold w-full border border-border/40 text-muted-foreground hover:border-border/70 hover:text-foreground transition-all">
+                  <Github className="w-3.5 h-3.5" /> View Code
+                </a>
+              )}
+
+              {p.notesLink && (
+                <a href={p.notesLink} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-mono font-bold w-full border border-border/40 text-muted-foreground hover:border-border/70 hover:text-foreground transition-all">
+                  <FileText className="w-3.5 h-3.5" /> Project Notes
+                </a>
+              )}
+
+              {p.interviewNotesLink && (
+                <a href={p.interviewNotesLink} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-mono font-bold w-full border border-border/40 text-muted-foreground hover:border-border/70 hover:text-foreground transition-all">
+                  <BookOpen className="w-3.5 h-3.5" /> Interview Notes
+                </a>
               )}
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

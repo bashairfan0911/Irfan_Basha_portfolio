@@ -6,8 +6,8 @@ function TiltCard({ children, className = "" }: { children: React.ReactNode; cla
   const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = ref.current!;
     const r = el.getBoundingClientRect();
-    const x = ((e.clientX - r.left) / r.width  - 0.5) * 2;
-    const y = ((e.clientY - r.top)  / r.height - 0.5) * 2;
+    const x = ((e.clientX - r.left) / r.width - 0.5) * 2;
+    const y = ((e.clientY - r.top) / r.height - 0.5) * 2;
     el.style.transform = `perspective(900px) rotateX(${-y * 5}deg) rotateY(${x * 5}deg) translateZ(4px)`;
   };
   const onLeave = () => { ref.current!.style.transform = "none"; };
@@ -20,10 +20,10 @@ function TiltCard({ children, className = "" }: { children: React.ReactNode; cla
 }
 
 const stats = [
-  { value: "2+",    label: "Projects",    icon: GitBranch, color: "text-green-400",  border: "border-green-400/20" },
-  { value: "7+",    label: "Certs",       icon: Award,     color: "text-yellow-400", border: "border-yellow-400/20" },
-  { value: "1",     label: "Internship",  icon: Briefcase, color: "text-primary",    border: "border-primary/20" },
-  { value: "AWS",   label: "Certified",   icon: Cloud,     color: "text-orange-400", border: "border-orange-400/20" },
+  { value: "2+", label: "Projects", icon: GitBranch, color: "text-green-400", border: "border-green-400/20" },
+  { value: "7+", label: "Certs", icon: Award, color: "text-yellow-400", border: "border-yellow-400/20" },
+  { value: "1", label: "Internship", icon: Briefcase, color: "text-primary", border: "border-primary/20" },
+  { value: "AWS", label: "Certified", icon: Cloud, color: "text-orange-400", border: "border-orange-400/20" },
 ];
 
 const journey = [
@@ -85,7 +85,7 @@ export const AboutSection = () => (
                   <a href="mailto:bashairfan0911@gmail.com" className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors font-mono">
                     <Mail className="w-3.5 h-3.5" /> bashairfan0911@gmail.com
                   </a>
-                  <a href="https://www.linkedin.com/in/irfan-basha-786ab4245/" target="_blank" rel="noopener noreferrer"
+                  <a href="https://www.linkedin.com/in/irfanbasha518/" target="_blank" rel="noopener noreferrer"
                     className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors font-mono">
                     <Linkedin className="w-3.5 h-3.5" /> LinkedIn
                   </a>

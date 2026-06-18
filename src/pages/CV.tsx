@@ -84,7 +84,7 @@ const CV = () => {
                 <a href="tel:+918610164761" className="flex items-center gap-1 hover:text-primary transition-colors">
                   <Phone className="w-3 h-3" /> +91 86101 64761
                 </a>
-                <a href="https://www.linkedin.com/in/irfan-basha-786ab4245/" target="_blank" rel="noopener noreferrer"
+                <a href="https://www.linkedin.com/in/irfanbasha518/" target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-1 hover:text-primary transition-colors">
                   <Linkedin className="w-3 h-3" /> LinkedIn
                 </a>
@@ -185,7 +185,7 @@ const CV = () => {
 
         {/* Footer */}
         <footer className="mt-10 pt-6 border-t border-border/30 text-center text-xs font-mono text-muted-foreground">
-          © 2025 Irfan Basha · AWS Certified DevOps Engineer ·{" "}
+          © 2026 Irfan Basha · AWS Certified DevOps Engineer ·{" "}
           <a href={RESUME_PATH} download="Irfan_Basha_Resume.pdf" className="text-primary hover:underline">Download Resume PDF</a>
         </footer>
       </div>

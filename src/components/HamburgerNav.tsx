@@ -174,7 +174,7 @@ export function HamburgerNav() {
         {/* Footer */}
         <div className="px-5 py-3 border-t border-border/50">
           <p className="text-xs text-muted-foreground text-center">
-            © 2025 Irfan Basha
+            © 2026 Irfan Basha
           </p>
         </div>
       </aside>

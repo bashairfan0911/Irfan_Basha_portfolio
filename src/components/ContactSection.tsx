@@ -23,7 +23,7 @@ const socials = [
   { icon: Mail,     label: "Email",    href: "mailto:bashairfan0911@gmail.com", value: "bashairfan0911@gmail.com", color: "#00d4ff" },
   { icon: Phone,    label: "Phone",    href: "tel:+918610164761",               value: "+91 86101 64761",          color: "#00ff88" },
   { icon: MapPin,   label: "Location", href: "#",                               value: "Chennai, India",           color: "#f59e0b" },
-  { icon: Linkedin, label: "LinkedIn", href: "https://www.linkedin.com/in/irfan-basha-786ab4245/", value: "irfan-basha-786ab4245", color: "#0A66C2" },
+  { icon: Linkedin, label: "LinkedIn", href: "https://www.linkedin.com/in/irfanbasha518/", value: "irfan-basha", color: "#0A66C2" },
   { icon: Github,   label: "GitHub",   href: "https://github.com/bashairfan0911",                  value: "bashairfan0911",        color: "#e2e8f0" },
 ];
 
